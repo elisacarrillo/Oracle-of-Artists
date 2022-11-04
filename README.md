@@ -1,4 +1,5 @@
 # Oracle-of-Artists
+
 ## Leading Question 
 
 Our final project is built upon the idea of the six degrees of seperation, the idea that people are six or fewer social connections from eachother. We believe that every artist is less than six degrees of seperation from eachother through song collaborations. Our project will be based off of the dataset 'Spotify 1.2 million songs' created by Rodolfo Figueroa. We will use this dataset to find connections between artists through features. Given two input artists, our algorithm will find the shortest path of collaborations to connect those two artists. The user will also be able to find the shortest cycle, or the shortest path for an artist to itself. We are also looking to implement an A* algorithm that connects two songs together with increasing slowly increasing their energy levels to generate a random playlist from song a to b.
