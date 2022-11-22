@@ -68,6 +68,7 @@ MakeGraph::MakeGraph(string filename) {
         }
 
     }
+}
 
 void MakeGraph::BFS_Search(Vertex v1) {
     // Mark all the vertices as not visited
