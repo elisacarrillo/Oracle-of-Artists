@@ -8,6 +8,10 @@
 
 class MakeGraph {
     public:
+        void MakeGraph::BFS_Search(Vertex v1);
+        std::vector<Vertex> MakeGraph::BFS_Path(Vertex v1, Vertex v2);
+
+
 
     private:
         Graph g_;
