@@ -1,6 +1,6 @@
 #include "makegraph.h"
 
 int main() {
-    MakeGraph("fakeFile.txt");
+    MakeGraph("sampledata.txt");
     return 0;
 }
