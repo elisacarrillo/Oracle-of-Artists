@@ -35,7 +35,7 @@
 #include <vector>
 
 #include "edge.h"
-#include "random.h"
+#include "../nim_graph/random.h"
 
 using std::cerr;
 using std::cout;
