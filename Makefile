@@ -5,8 +5,8 @@ CXX_FLAGS=-std=c++20 -g -fstandalone-debug -Wall -Wextra -Werror -pedantic $(INC
 exec: bin/exec
 tests: bin/tests
 
-bin/exec: src/makegraph.cpp src/main.cpp 
-	${CXX} ${CXX_FLAGS} src/main.cpp src/makegraph.cpp -o bin/exec
+bin/exec: src/makegraph.cpp src/main.cpp nim_graph/graph.cpp
+	${CXX} ${CXX_FLAGS} src/main.cpp src/makegraph.cpp nim_graph/graph.cpp -o bin/exec
 
 
 obj/catch.o: tests/catch.cc

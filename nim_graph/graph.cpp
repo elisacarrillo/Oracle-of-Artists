@@ -195,7 +195,7 @@ int Graph::getEdgeWeight(Vertex source, Vertex destination) const
 void Graph::insertVertex(Vertex v)
 {
     // will overwrite if old stuff was there
-    removeVertex(v);
+    // removeVertex(v);
     // make it empty again
     adjacency_list[v] = unordered_map<Vertex, Edge>();
 }
@@ -414,13 +414,13 @@ void Graph::savePNG(string title) const
         << "\toverlap=\"false\";\n"
         << "\tdpi=\"1300\";\n"
         << "\tsep=\"1.5\";\n"
-        << "\tnode [fixedsize=\"true\", shape=\"circle\", fontsize=\"7.0\"];\n"
-        << "\tedge [penwidth=\"1.5\", fontsize=\"7.0\"];\n";
+        << "\tnode [fixedsize=\"true\", shape=\"circle\", fontsize=\"2.0\"];\n"
+        << "\tedge [penwidth=\"1.5\", fontsize=\"2.0\"];\n";
 
     vector<Vertex> allv = getVertices();
     //lambda expression
     sort(allv.begin(), allv.end(), [](const Vertex& lhs, const Vertex& rhs) {
-        return stoi(lhs.substr(3)) > stoi(rhs.substr(3));
+        return (lhs.substr(3)) > (rhs.substr(3));
     });
 
     int xpos1 = 100;
@@ -446,7 +446,7 @@ void Graph::savePNG(string title) const
         neatoFile << ";\n";
     }
 
-    neatoFile << "\tedge [penwidth=\"1.5\", fontsize=\"7.0\"];\n";
+    neatoFile << "\tedge [penwidth=\"1.5\", fontsize=\"2.0\"];\n";
 
     for (auto it = adjacency_list.begin(); it != adjacency_list.end(); ++it) 
     {
@@ -467,7 +467,7 @@ void Graph::savePNG(string title) const
             } else if (edgeLabel == "LOSE") {
                 neatoFile << "[color=\"red\"]";                
             } else {
-                neatoFile << "[color=\"grey\"]";
+                 neatoFile << "[label=\"" << it2->second.getLabel() << "\"]";
             }
             if (weighted && it2->second.getWeight() != -1)
                 neatoFile << "[label=\"" << it2->second.getWeight() << "\"]";
