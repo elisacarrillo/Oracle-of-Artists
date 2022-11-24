@@ -414,11 +414,12 @@ void Graph::savePNG(string title) const
 
     neatoFile
         << "strict graph G {\n"
-        << "\toverlap=\"false\";\n"
-        << "\tdpi=\"1300\";\n"
-        << "\tsep=\"1.5\";\n"
-        << "\tnode [fixedsize=\"true\", shape=\"circle\", fontsize=\"2.0\"];\n"
-        << "\tedge [penwidth=\"1.5\", fontsize=\"2.0\"];\n";
+        << "\toverlap=\"true\";\n"
+        << "\tdpi=\"480\";\n"
+        << "\tsep=\".5\";\n"
+        << "\tsize=\"10\";\n"
+        << "\tnode [fixedsize=\"false\", shape=\"circle\", fontsize=\"2.0\"];\n"
+        << "\tedge [penwidth=\".5\", fontsize=\"1.0\"];\n";
 
     vector<Vertex> allv = getVertices();
     std::cout << "SavePNG 2" << std::endl;
