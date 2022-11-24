@@ -79,7 +79,6 @@ vector<Vertex> Graph::getAdjacent(Vertex source) const
 
     if(lookup == adjacency_list.end())
         return vector<Vertex>();
-
     else
     {
         vector<Vertex> vertex_list;
@@ -366,9 +365,9 @@ void Graph::snapshot()
 {
     std::stringstream ss;
     ss << picNum;
-    std::cout << "GRAPH HERE" << std::endl;
+    // std::cout << "GRAPH HERE" << std::endl;
     string newName = picName + ss.str();
-    std::cout << "GRAPH HERE 1" << std::endl;
+    // std::cout << "GRAPH HERE 1" << std::endl;
     savePNG(newName);
     ++picNum;
 }
@@ -408,7 +407,7 @@ void Graph::savePNG(string title) const
     string filename = title + ".dot";
     neatoFile.open(filename.c_str());
 
-    std::cout << "SavePNG 1" << std::endl;
+    // std::cout << "SavePNG 1" << std::endl;
     if (!neatoFile.good())
         error("couldn't create " + filename);
 
@@ -422,38 +421,38 @@ void Graph::savePNG(string title) const
         << "\tedge [penwidth=\".5\", fontsize=\"1.0\"];\n";
 
     vector<Vertex> allv = getVertices();
-    std::cout << "SavePNG 2" << std::endl;
+    // std::cout << "SavePNG 2" << std::endl;
     //lambda expression
     // sort(allv.begin(), allv.end(), [](const Vertex& lhs, const Vertex& rhs) {
     //     return (lhs.substr(3)) > (rhs.substr(3));
     // });
-    std::cout << "SavePNG 3" << std::endl;
+    // std::cout << "SavePNG 3" << std::endl;
 
-    int xpos1 = 100;
-    int xpos2 = 100;
+    int xpos1 = 10;
+    int xpos2 = 10;
     int xpos, ypos;
-    std::cout << "SavePNG 3" << std::endl;
+    // std::cout << "SavePNG 3" << std::endl;
     for (auto it : allv) {
-        std::cout << "SavePNG 3.5" << std::endl;
+        // std::cout << "SavePNG 3.5" << std::endl;
         string current = it;
         neatoFile 
             << "\t\"" 
             << current
             << "\"";
         if (current[1] == '1') {
-            ypos = 100;
+            ypos = 10;
             xpos = xpos1;
-            xpos1 += 100;
+            xpos1 += 10;
         }
         else {
-            ypos = 200;
+            ypos = 20;
             xpos = xpos2;
-            xpos2 += 100;
+            xpos2 += 10;
         }
         neatoFile << "[pos=\""<< xpos << "," << ypos <<"\"]";
         neatoFile << ";\n";
     }
-    std::cout << "SavePNG 4" << std::endl;
+    // std::cout << "SavePNG 4" << std::endl;
 
     neatoFile << "\tedge [penwidth=\"1.5\", fontsize=\"2.0\"];\n";
 
@@ -484,14 +483,14 @@ void Graph::savePNG(string title) const
             neatoFile<< "[constraint = \"false\"]" << ";\n";
         }
     }
-     std::cout << "SavePNG 5" << std::endl;
+    //  std::cout << "SavePNG 5" << std::endl;
 
     neatoFile << "}";
     neatoFile.close();
     string command = "neato -n -Tpng " + filename + " -o " + title
                      + ".png 2> /dev/null";
     int result = system(command.c_str());
-    std::cout << "SavePNG 6" << std::endl;
+    // std::cout << "SavePNG 6" << std::endl;
 
 
     if (result == 0) {

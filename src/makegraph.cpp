@@ -8,33 +8,20 @@ using namespace std;
 MakeGraph::MakeGraph(string filename) : g_(false, false) {
     //for each line create array of artists and make node the name of the song
     std::ifstream infile(filename);
-    // file.open(filename);
     std::string line;
     std::cout<<"here"<<std::endl;
-    // if (infile.is_open()) {
-        // std::getline(infile, line);
-        // std::cout<<line<<std::endl;
-    int counter = 1;
-
-    int number_of_lines = 0;
-    // std::string line;
-
     
 
     while (std::getline(infile, line) && infile.eof() == false) {
-        std::cout<<"counter is at::" << counter<<std::endl;
-        counter++;
-        std::cout<<"here 2"<<std::endl;
+        // std::cout<<"here 2"<<std::endl;
         std::string content;
         std::vector<std::string> vect;
         std::stringstream ss(line);
-            // 683,"12 Études, Op. 25: No. 7 in C-Sharp Minor","['Frédéric Chopin', 'Vladimir Horowitz']",0.0311
         while(std::getline(ss,content,'"')) {
             vect.push_back(content);
-            std::cout<<content<<std::endl;
-
+            // std::cout<<content<<std::endl;
         }
-        std::cout<<vect.size()<<std::endl;
+        // std::cout<<vect.size()<<std::endl;
         // for (unsigned int i = 0; i < vect.size(); i++) {
         //     std::cout<<"look"<<i<<std::endl;
         //     if (vect[i].at(0) == ',') {
@@ -52,18 +39,12 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
         // }
 
         std::string songName = vect[1];
-        std::cout<<vect[1]<<std::endl;
+        std::cout<<"Song name: " << vect[1]<<std::endl;
         std::string artists = vect[3];
-        std::cout<<"3: "<<vect[3]<<std::endl;
+        std::cout<<"Artists: "<<vect[3]<<std::endl;
 
-        
-
-    
         artists.erase(artists.begin());
         artists.erase(artists.begin() + artists.size() - 1);
-
-        std::cout<<"song name: "<<songName<<std::endl;
-        std::cout<<"artists: "<<artists<<std::endl;
 
         std::vector<std::string> artistVect;
         std::stringstream ssTwo(artists);
@@ -77,7 +58,7 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
             }
             person.erase(person.begin());
             artistVect.push_back(person);
-            std::cout<<person<<std::endl;
+            // std::cout<<person<<std::endl;
         }
         for (unsigned int i = 0; i < artistVect.size(); i++) {
             Vertex v = artistVect[i];
@@ -95,19 +76,40 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
         
         
         std::cout<<"------------------------------------"<<std::endl;
-       
-        // g_.insertEdge()
-
-        // Graph newGraph = new Graph(false);
-        // g_.insertVertex( /v);
     }
-    std::cout<<"total Lines is ::" << number_of_lines<<std::endl;
+    // std::cout<<"total Lines is ::" << number_of_lines<<std::endl;
     g_.snapshot();
     // g_.print();
 
-    // g_.savePNG("yoyo");
+
+    int counter = 0;
+    std::vector<Vertex> all_nodes = g_.getVertices();
+    for(Vertex it: all_nodes) {
+        std::cout << counter << ": " << it << ", ";
+        counter++;
+    }
+    auto it = std::find(all_nodes.begin(), all_nodes.end(), "Raquel Rodriguez");
+    if (it == all_nodes.end())
+        {
+         std::cout << "Name not here" << std::endl;
+        } else {
+        auto index = std::distance(all_nodes.begin(), it);
+        std::cout << "position is:: " << index << std::endl;
+    }
+    // Vertex here = all_nodes.find("Raquel Rodriguez");
+    std::cout<<"------------------------------------"<<std::endl;
+    std::cout<<"------------------------------------"<<std::endl;
+    // getAdjacentNodes(here);
 }
 
+
+void MakeGraph::getAdjacentNodes(Vertex source) {
+    std::vector<Vertex> adjacent_nodes_vector;
+    adjacent_nodes_vector = g_.getAdjacent(source);
+    for(Vertex it: adjacent_nodes_vector) {
+        std::cout << it << std::endl;
+    }
+}
 // void MakeGraph::BFS_Search(Vertex v1) {
 //     // Mark all the vertices as not visited
 //     std::map<Vertex, bool> visited;
