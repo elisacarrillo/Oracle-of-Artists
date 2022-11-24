@@ -45,7 +45,7 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
         std::string songName = vect[1];
         std::cout<<vect[1]<<std::endl;
         std::string artists = vect[3];
-        std::cout<<"3"<<vect[3]<<std::endl;
+        std::cout<<"3: "<<vect[3]<<std::endl;
 
         
 
@@ -83,7 +83,8 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
             }
             // FIXME: if needed add more artists 
         }
-        g_.print();
+        // g_.print();
+        std::cout<<"------------------------------------"<<std::endl;
        
         g_.savePNG("yoyo");
         // g_.insertEdge()
