@@ -14,7 +14,16 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
     // if (infile.is_open()) {
         // std::getline(infile, line);
         // std::cout<<line<<std::endl;
-    while (std::getline(infile, line)) {
+    int counter = 1;
+
+    int number_of_lines = 0;
+    // std::string line;
+
+    
+
+    while (std::getline(infile, line) && infile.eof() == false) {
+        std::cout<<"counter is at::" << counter<<std::endl;
+        counter++;
         std::cout<<"here 2"<<std::endl;
         std::string content;
         std::vector<std::string> vect;
@@ -83,16 +92,20 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
             }
             // FIXME: if needed add more artists 
         }
-        // g_.print();
+        
+        
         std::cout<<"------------------------------------"<<std::endl;
        
-        g_.savePNG("yoyo");
         // g_.insertEdge()
 
         // Graph newGraph = new Graph(false);
         // g_.insertVertex( /v);
-
     }
+    std::cout<<"total Lines is ::" << number_of_lines<<std::endl;
+    g_.snapshot();
+    // g_.print();
+
+    // g_.savePNG("yoyo");
 }
 
 // void MakeGraph::BFS_Search(Vertex v1) {

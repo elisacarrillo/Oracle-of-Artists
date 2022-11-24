@@ -147,7 +147,7 @@ public:
      * @return - if edge exists, return edge label
      *         - if edge doesn't exist, return InvalidLabel
      */
-    std::string getEdgeLabel(Vertex source, Vertex destination) const;
+    string getEdgeLabel(Vertex source, Vertex destination) const;
 
     /**
      * Gets the weight of the edge between two vertices.
