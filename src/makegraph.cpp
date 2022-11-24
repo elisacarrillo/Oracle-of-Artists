@@ -15,14 +15,14 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
         // std::getline(infile, line);
         // std::cout<<line<<std::endl;
     while (std::getline(infile, line)) {
-            // std::cout<<"here 2"<<std::endl;
+        std::cout<<"here 2"<<std::endl;
         std::string content;
         std::vector<std::string> vect;
         std::stringstream ss(line);
             // 683,"12 Études, Op. 25: No. 7 in C-Sharp Minor","['Frédéric Chopin', 'Vladimir Horowitz']",0.0311
         while(std::getline(ss,content,'"')) {
             vect.push_back(content);
-            // std::cout<<content<<std::endl;
+            std::cout<<content<<std::endl;
 
         }
         std::cout<<vect.size()<<std::endl;
@@ -43,7 +43,11 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
         // }
 
         std::string songName = vect[1];
+        std::cout<<vect[1]<<std::endl;
         std::string artists = vect[3];
+        std::cout<<"3"<<vect[3]<<std::endl;
+
+        
 
     
         artists.erase(artists.begin());

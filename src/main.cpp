@@ -1,6 +1,6 @@
 #include "makegraph.h"
 
 int main() {
-    MakeGraph("sampledata.txt");
+    MakeGraph("tracks_twoartists.txt");
     return 0;
 }
