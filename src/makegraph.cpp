@@ -80,22 +80,24 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
     // std::cout<<"total Lines is ::" << number_of_lines<<std::endl;
     g_.snapshot();
     // g_.print();
-
-
-    int counter = 0;
-    std::vector<Vertex> all_nodes = g_.getVertices();
-    for(Vertex it: all_nodes) {
-        std::cout << counter << ": " << it << ", ";
-        counter++;
-    }
-    auto it = std::find(all_nodes.begin(), all_nodes.end(), "Raquel Rodriguez");
+     std::vector<Vertex> all_nodes = g_.getVertices();
+    // for(Vertex it: all_nodes) {
+    //     std::cout << counter << ": " << it << ", ";
+    //     counter++;
+    // }
+    std::cout << "FINDING ADJACENT" << std::endl;
+    auto it = std::find(all_nodes.begin(), all_nodes.end(), "Pat Mastelotto");
     if (it == all_nodes.end())
         {
          std::cout << "Name not here" << std::endl;
         } else {
         auto index = std::distance(all_nodes.begin(), it);
         std::cout << "position is:: " << index << std::endl;
+        Vertex v = "Pat Mastelotto";
+        getAdjacentNodes(v);
     }
+
+   
     // Vertex here = all_nodes.find("Raquel Rodriguez");
     std::cout<<"------------------------------------"<<std::endl;
     std::cout<<"------------------------------------"<<std::endl;
@@ -106,9 +108,14 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
 void MakeGraph::getAdjacentNodes(Vertex source) {
     std::vector<Vertex> adjacent_nodes_vector;
     adjacent_nodes_vector = g_.getAdjacent(source);
+    std::cout << "Size: " << adjacent_nodes_vector.size() << std::endl;
     for(Vertex it: adjacent_nodes_vector) {
         std::cout << it << std::endl;
     }
+}
+
+Graph MakeGraph::getGraph() {
+    return g_;
 }
 // void MakeGraph::BFS_Search(Vertex v1) {
 //     // Mark all the vertices as not visited
