@@ -1,0 +1,9 @@
+strict graph G {
+	overlap="true";
+	dpi="480";
+	sep=".5";
+	size="10";
+	node [fixedsize="false", shape="circle", fontsize="2.0"];
+	edge [penwidth=".5", fontsize="1.0"];
+	edge [penwidth="1.5", fontsize="2.0"];
+}

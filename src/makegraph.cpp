@@ -98,18 +98,18 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
     //     Vertex v = "Pat Mastelotto";
     //     getAdjacentNodes(v);
     // }
-    Vertex bfs1 = "Justin Bieber";
-    Vertex bfs2 = "Ed Sheeran";
-    std::vector<std::pair<Vertex, std::string>> bfs = BFS_Search(bfs1, bfs2);
-    for (auto v : bfs) {
-        std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
-    }
+    // Vertex bfs1 = "Martin Garrix";
+    // Vertex bfs2 = "Kanye West";
+    // std::vector<std::pair<Vertex, std::string>> bfs = BFS_Search(bfs1, bfs2);
+    // for (auto v : bfs) {
+    //     std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
+    // }
 
-    Vertex dj1 = "Justin Bieber";
-    Vertex dj2 = "Ed Sheeran";
-    std::vector<Vertex> dj = Dijkstra(dj1, dj2);
+    Vertex dj1 = "Taylor Swift";
+    Vertex dj2 = "Kanye West";
+    std::vector<std::pair<Vertex, std::string>> dj = Dijkstra(dj1, dj2);
     for (auto v : dj) {
-        std::cout << "Artist: " << v << std::endl;
+        std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
     }
    
     // Vertex here = all_nodes.find("Raquel Rodriguez");
@@ -200,42 +200,55 @@ Vertex MakeGraph::mindist(std::map<Vertex, int> dist, std::list<Vertex> queue) {
     return to_return;
 }
 
-std::vector<Vertex>  MakeGraph::Dijkstra(Vertex v1, Vertex v2) {
+std::vector<std::pair<Vertex, std::string>> MakeGraph::Dijkstra(Vertex v1, Vertex v2) {
     std::cout << "DIJKSTRA" << std::endl;
     std::map<Vertex, int> dist;
     std::map<Vertex, Vertex> prev;
+    std::map<Vertex, bool> visited;
     std::list<Vertex> queue;
     std::vector<Vertex> v = g_.getVertices();
     for (unsigned int i = 0; i < v.size(); i++) {
         dist.insert(std::pair<Vertex,int>(v[i], INT_MAX));
         prev.insert(std::pair<Vertex,Vertex>(v[i], ""));
-        queue.push_back(v[i]);
+        visited.insert(std::pair<Vertex,bool>(v[i], false));
+        
     }
+    queue.push_back(v1);
     dist[v1] = 0;
     Vertex u = v1;
     while(!queue.empty()) {
-        u = mindist(dist, queue);
-        std::cout << u << std::endl;
+        //u = mindist(dist, queue);
+        u = queue.front();
+        //std::cout << u << std::endl;
         if (u == v2) {
             break;
         }
-        queue.remove(u);  
+        //queue.remove(u);  
+        queue.pop_front();
         std::vector<Vertex> adj = g_.getAdjacent(u);
         for (Vertex adjacent : adj) {
-            // CHECK IF VERTEX IS STILL IN QUEUE
-            if (std::find(queue.begin(), queue.end(), adjacent) != queue.end()) {
+            // CHECK IF VERTEX IS STILL IN QUEUE --> not visited
+            if (!visited[adjacent]) {
                 int alt = dist[u] + 1;
                 if (alt < dist[adjacent]) {
                     dist[adjacent] = alt;
                     prev[adjacent] = u;
                 }
+                visited[adjacent] = true;
+                queue.push_back(adjacent);
             }
         }
     }
-    std::vector<Vertex> path;
+    std::vector<std::pair<Vertex, std::string>> path;
     if (prev[u] != "" || u == v1) {
         while(u != "") {
-            path.insert(path.begin(), u);
+            std::string label;
+            if (g_.edgeExists(u, prev[u]))
+                label = g_.getEdgeLabel(u, prev[u]);
+            else 
+                label = "empty";
+            std::pair<Vertex, std::string> p(u, label);
+            path.insert(path.begin(), p);
             u = prev[u];
         }
     }
