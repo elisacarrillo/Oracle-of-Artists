@@ -16,7 +16,8 @@ class MakeGraph {
         std::vector<std::pair<Vertex, std::string>> BFS_Search(Vertex v1, Vertex v2);
         std::vector<std::pair<Vertex, std::string>> Dijkstra(Vertex v1, Vertex v2);
         Vertex mindist(std::map<Vertex, int> dist, std::list<Vertex> queue);
-        // std::vector<Vertex> MakeGraph::BFS_Path(Vertex v1, Vertex v2);
+        void PrintShortestPath(Vertex artist1, Vertex artist2);
+        const Graph & getGraph() const;
         
 
 

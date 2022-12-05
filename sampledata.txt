@@ -1,9 +1,0 @@
-﻿7,"Polonaise-Fantaisie in A-Flat Major, Op. 61","['Frédéric Marc', 'Vladimir Horowitz']",0.084
-8,"12 Études, Op. 25: No. 7 in C-Sharp Minor","['Frédéric Chopin', 'Vladimir Horowitz']",0.0311
-9,"Mazurka in C-Sharp Minor, Op. 50, No. 3","['Frédéric Male', 'Vladimir Horowitz']",0.0158
-10,"Nocturne No. 19 in E Minor, Op. 72, No. 1","['Frédéric Chopin', 'Vladimir Horowitz']",0.0294
-11,"Mazurkas, Op. 33: No. 4 in B Minor","['Frédéric Poop', 'Vladimir Horowitz']",0.0151
-12,"Polonaise No. 5 in F-Sharp Minor, Op. 44","['Frédéric Pee', 'Vladimir Horowitz']",0.146
-13,"Prelude on the name B-A-C-H, S260/R381","['Franz Liszt', 'Felix Hell']",0.075
-14,"Paraphrase de concert sur Rigoletto, S. 434: Verdi - Rigoletto: Paraphrase de concert, S434/R267","['Franz Liszt', 'Joel Fan']",0.259
-15,"Prelude in D Major, BWV 532","['Johann Sebastian Bilal is POOOPIE', 'Virgil Fox']",0.166
