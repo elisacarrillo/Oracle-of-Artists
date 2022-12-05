@@ -105,12 +105,17 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
     //     std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
     // }
 
-    Vertex dj1 = "Taylor Swift";
-    Vertex dj2 = "Kanye West";
+    Vertex dj1 = "Bad Bunny";
+    Vertex dj2 = "Shakiera";
     std::vector<std::pair<Vertex, std::string>> dj = Dijkstra(dj1, dj2);
-    for (auto v : dj) {
-        std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
+    if (dj.empty()) {
+        std::cout << "There is no path." << std::endl;
+    } else {
+        for (auto v : dj) {
+            std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
+        }
     }
+    
    
     // Vertex here = all_nodes.find("Raquel Rodriguez");
     std::cout<<"------------------------------------"<<std::endl;
@@ -216,11 +221,13 @@ std::vector<std::pair<Vertex, std::string>> MakeGraph::Dijkstra(Vertex v1, Verte
     queue.push_back(v1);
     dist[v1] = 0;
     Vertex u = v1;
+    int done = 0;
     while(!queue.empty()) {
         //u = mindist(dist, queue);
         u = queue.front();
         //std::cout << u << std::endl;
         if (u == v2) {
+            done = 1;
             break;
         }
         //queue.remove(u);  
@@ -240,6 +247,9 @@ std::vector<std::pair<Vertex, std::string>> MakeGraph::Dijkstra(Vertex v1, Verte
         }
     }
     std::vector<std::pair<Vertex, std::string>> path;
+    if (done == 0) {
+        return path;
+    }
     if (prev[u] != "" || u == v1) {
         while(u != "") {
             std::string label;
