@@ -16,6 +16,7 @@ class MakeGraph {
         std::vector<std::pair<Vertex, std::string>> BFS_Search(Vertex v1, Vertex v2);
         std::vector<std::pair<Vertex, std::string>> Dijkstra(Vertex v1, Vertex v2);
         Vertex mindist(std::map<Vertex, int> dist, std::list<Vertex> queue);
+        std::map<int, int> BaconNumber(Vertex v1);
         // std::vector<Vertex> MakeGraph::BFS_Path(Vertex v1, Vertex v2);
         
 

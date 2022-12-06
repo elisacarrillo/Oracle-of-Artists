@@ -106,13 +106,23 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
     // }
 
     Vertex dj1 = "Bad Bunny";
-    Vertex dj2 = "Shakiera";
+    Vertex dj2 = "Shakira";
     std::vector<std::pair<Vertex, std::string>> dj = Dijkstra(dj1, dj2);
     if (dj.empty()) {
         std::cout << "There is no path." << std::endl;
     } else {
         for (auto v : dj) {
             std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
+        }
+    }
+
+    Vertex bacon = "Taylor Swift";
+    std::map <int, int> bacon_number = BaconNumber(bacon);
+    if (bacon_number.empty()) {
+        std::cout << "This artist has no connections" << std::endl;
+    } else {
+        for (auto it = bacon_number.begin(); it != bacon_number.end(); it++) {
+            std::cout << bacon <<  " Number: " << it->first << " # of People: " << it->second << std::endl;
         }
     }
     
@@ -263,6 +273,53 @@ std::vector<std::pair<Vertex, std::string>> MakeGraph::Dijkstra(Vertex v1, Verte
         }
     }
     return path;
+}
+
+std::map<int, int> MakeGraph::BaconNumber(Vertex v1) {
+    std::cout << "BACON NUMBER" << std::endl;
+    std::map<Vertex, int> dist;
+    std::map<Vertex, Vertex> prev;
+    std::map<Vertex, bool> visited;
+    std::list<Vertex> queue;
+    std::vector<Vertex> v = g_.getVertices();
+    for (unsigned int i = 0; i < v.size(); i++) {
+        dist.insert(std::pair<Vertex,int>(v[i], INT_MAX));
+        prev.insert(std::pair<Vertex,Vertex>(v[i], ""));
+        visited.insert(std::pair<Vertex,bool>(v[i], false));
+        
+    }
+    queue.push_back(v1);
+    dist[v1] = 0;
+    Vertex u = v1;
+    while(!queue.empty()) {
+        //u = mindist(dist, queue);
+        u = queue.front();  
+        queue.pop_front();
+        std::vector<Vertex> adj = g_.getAdjacent(u);
+        for (Vertex adjacent : adj) {
+            // CHECK IF VERTEX IS STILL IN QUEUE --> not visited
+            if (!visited[adjacent]) {
+                int alt = dist[u] + 1;
+                if (alt < dist[adjacent]) {
+                    dist[adjacent] = alt;
+                    prev[adjacent] = u;
+                }
+                visited[adjacent] = true;
+                queue.push_back(adjacent);
+            }
+        }
+    }
+    std::map <int, int> to_return;
+    for (auto it = dist.begin(); it != dist.end(); it++) {
+        if (it->second != INT_MAX) {
+            if (to_return.find(it->second) == to_return.end()) {
+                to_return.insert( std::pair<int,int>(it->second,1));
+            } else {
+                to_return[it->second] =  to_return[it->second] + 1;
+            }
+        }
+    }
+    return to_return;
 }
 
 
