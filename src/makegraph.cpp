@@ -74,8 +74,17 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
     
     std::cout<<"------------------------------------"<<std::endl;
     std::cout<<"------------------------------------"<<std::endl;
-    std::vector<Vertex> artists = g_.getVertices();
-    std::cout << "BEST CENTER AWARD GOES TO..." << BestBacon(artists) << std::endl;
+    //get most popular artist
+    Vertex artist4 = BestPageRank();
+    std::cout<<"Most popular artist: "<<artist4<<std::endl;
+
+    std::cout<<"------------------------------------"<<std::endl;
+    std::cout<<"------------------------------------"<<std::endl;
+    // std::vector<Vertex> artists = g_.getVertices();
+    // std::cout << "BEST CENTER AWARD GOES TO..." << BestBacon(artists) << std::endl;
+
+
+
 }
 
 
@@ -326,3 +335,65 @@ Vertex MakeGraph::BestBacon(std::vector<Vertex> artists) {
     }
     return best;
 }
+//implement pagerank to get most popular artist
+std::map<Vertex, double> MakeGraph::pagerank() {
+    std::vector<Vertex> v = g_.getVertices();
+    std::map<Vertex, double> pagerank;
+    for (Vertex artist : v) {
+        pagerank.insert(std::pair<Vertex, double>(artist, 1.0));
+    }
+    for (int i = 0; i < 10; i++) {
+        std::cout << "Round: " << i << std::endl;
+        for (Vertex artist : v) {
+            std::vector<Vertex> adj = g_.getAdjacent(artist);
+            double sum = 0;
+            for (Vertex adjacent : adj) {
+                sum += pagerank[adjacent] / g_.getAdjacent(adjacent).size();
+            }
+            pagerank[artist] = 0.15 + 0.85 * sum;
+        }
+    }
+    return pagerank;
+}
+
+Vertex MakeGraph::BestPageRank() {
+    //get top 10g artists
+    std::map<Vertex, double> pagerank = this->pagerank();
+    std::vector<std::pair<Vertex, double>> top10;
+    for (auto it = pagerank.begin(); it != pagerank.end(); it++) {
+        if (top10.size() < 10) {
+            top10.push_back(std::pair<Vertex, double>(it->first, it->second));
+        } else {
+            std::pair<Vertex, double> min = top10[0];
+            int index = 0;
+            for (unsigned int i = 0; i < top10.size(); i++) {
+                if (top10[i].second < min.second) {
+                    min = top10[i];
+                    index = i;
+                }
+            }
+            if (it->second > min.second) {
+                top10[index] = std::pair<Vertex, double>(it->first, it->second);
+            }
+        }
+    }
+    //sort top 10 artists
+    std::sort(top10.begin(), top10.end(), [](const std::pair<Vertex, double> &left, const std::pair<Vertex, double> &right) {
+        return left.second > right.second;
+    });
+    //print top 10
+    for (auto it = top10.begin(); it != top10.end(); it++) {
+        std::cout << it->first << " " << it->second << std::endl;
+    }
+
+    double max = 0;
+    Vertex best;
+    for (auto it = pagerank.begin(); it != pagerank.end(); it++) {
+        if (it->second > max) {
+            max = it->second;
+            best = it->first;
+        }
+    }
+    return best;
+}
+ 

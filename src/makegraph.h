@@ -21,6 +21,8 @@ class MakeGraph {
         const Graph & getGraph() const;
         void PrintBaconNumber(Vertex artist);
         Vertex BestBacon(std::vector<Vertex> artists);
+        std::map<Vertex, double> pagerank();
+        Vertex BestPageRank();
         
 
 
