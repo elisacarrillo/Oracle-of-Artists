@@ -56,75 +56,32 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
                 }
                 
             }
-            // if (i == 1) {
-            //     g_.insertEdge(artistVect[i], artistVect[i-1]);
-            //     g_.setEdgeLabel(artistVect[i], artistVect[i-1], songName);
-            // }
-            // if (i == 2) {
-            //     g_.insertEdge(artistVect[i], artistVect[i-1]);
-            //     g_.setEdgeLabel(artistVect[i], artistVect[i-1], songName);
-
-            //     g_.insertEdge(artistVect[i], artistVect[i-2]);
-            //     g_.setEdgeLabel(artistVect[i], artistVect[i-2], songName);
-            // }
-            // if (i == 3) {
-            //     g_.insertEdge(artistVect[i], artistVect[i-1]);
-            //     g_.setEdgeLabel(artistVect[i], artistVect[i-1], songName);
-
-            //     g_.insertEdge(artistVect[i], artistVect[i-2]);
-            //     g_.setEdgeLabel(artistVect[i], artistVect[i-2], songName);
-
-            //     g_.insertEdge(artistVect[i], artistVect[i-3]);
-            //     g_.setEdgeLabel(artistVect[i], artistVect[i-3], songName);
-            // }
-            
         }
         
         std::cout<<"------------------------------------"<<std::endl;
     }
     g_.snapshot();
 
-    Vertex dj1 = "Bad Bunny";
-    Vertex dj2 = "Shakira";
-    std::vector<std::pair<Vertex, std::string>> dj = Dijkstra(dj1, dj2);
-    if (dj.empty()) {
-        std::cout << "There is no path." << std::endl;
-    } else {
-        for (auto v : dj) {
-            std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
-        }
-    }
-
-    Vertex bacon = "Taylor Swift";
-    std::map <int, int> bacon_number = BaconNumber(bacon);
-    if (bacon_number.empty()) {
-        std::cout << "This artist has no connections" << std::endl;
-    } else {
-        for (auto it = bacon_number.begin(); it != bacon_number.end(); it++) {
-            std::cout << bacon <<  " Number: " << it->first << " # of People: " << it->second << std::endl;
-        }
-    }
     Vertex artist1 = "Taylor Swift";
     Vertex artist2 = "Coldplay";
     PrintShortestPath(artist1, artist2);
+
+    std::cout<<"------------------------------------"<<std::endl;
+    std::cout<<"------------------------------------"<<std::endl;
+
+    Vertex artist3 = "Johann Sebastian Bach";
+    PrintBaconNumber(artist3);
     
     std::cout<<"------------------------------------"<<std::endl;
     std::cout<<"------------------------------------"<<std::endl;
+    std::vector<Vertex> artists = g_.getVertices();
+    std::cout << "BEST CENTER AWARD GOES TO..." << BestBacon(artists) << std::endl;
 }
 
 
-void MakeGraph::getAdjacentNodes(Vertex source) {
-    std::vector<Vertex> adjacent_nodes_vector;
-    adjacent_nodes_vector = g_.getAdjacent(source);
-    std::cout << "Size: " << adjacent_nodes_vector.size() << std::endl;
-    for(Vertex it: adjacent_nodes_vector) {
-        std::cout << it << std::endl;
-    }
-}
 
-Graph MakeGraph::getGraph() {
-    return g_;
-}
+
+
 std::vector<std::pair<Vertex, std::string>>  MakeGraph::BFS_Search(Vertex v1, Vertex v2) {
     std::cout << "BFS" << std::endl;
     // Mark all the vertice as as not visited
@@ -252,7 +209,7 @@ std::vector<std::pair<Vertex, std::string>> MakeGraph::Dijkstra(Vertex v1, Verte
 }
 
 std::map<int, int> MakeGraph::BaconNumber(Vertex v1) {
-    std::cout << "BACON NUMBER" << std::endl;
+    std::cout << v1<<" NUMBER" << std::endl;
     std::map<Vertex, int> dist;
     std::map<Vertex, Vertex> prev;
     std::map<Vertex, bool> visited;
@@ -311,4 +268,61 @@ void MakeGraph::PrintShortestPath(Vertex artist1, Vertex artist2) {
 
 const Graph & MakeGraph::getGraph() const {
   return g_;
+}
+
+void MakeGraph::PrintBaconNumber(Vertex artist) {
+    std::map <int, int> bacon_number = BaconNumber(artist);
+    if (bacon_number.empty()) {
+        std::cout << "This artist has no connections" << std::endl;
+    } else {
+        for (auto it = bacon_number.begin(); it != bacon_number.end(); it++) {
+            std::cout << artist <<  " Number: " << it->first << " # of People: " << it->second << std::endl;
+        }
+    }
+
+    //get total amount of linkable artists
+    double total = 0;
+    for (auto it = bacon_number.begin(); it != bacon_number.end(); it++) {
+        total += it->second;
+    }
+    std::cout << "Total Linkable Artists: " << total << std::endl;
+    //get Weighted total of linkable actors
+    double weighted_total = 0;
+    for (auto it = bacon_number.begin(); it != bacon_number.end(); it++) {
+        weighted_total += it->first * it->second;
+    }
+    std::cout << "Weighted Total: " << weighted_total << std::endl;
+    //get average artists number
+    std::cout << "Average" << artist << "Number: " << weighted_total / total << std::endl;
+    
+
+
+}
+
+Vertex MakeGraph::BestBacon(std::vector<Vertex> artists) {
+    std::map<Vertex, double> average;
+    for (Vertex artist : artists) {
+        std::map <int, int> bacon_number = BaconNumber(artist);
+        //get total amount of linkable artists
+        double total = 0;
+        for (auto it = bacon_number.begin(); it != bacon_number.end(); it++) {
+            total += it->second;
+        }
+        //get Weighted total of linkable actors
+        double weighted_total = 0;
+        for (auto it = bacon_number.begin(); it != bacon_number.end(); it++) {
+            weighted_total += it->first * it->second;
+        }
+        //get average artists number
+        average.insert(std::pair<Vertex, double>(artist, weighted_total / total));
+    }
+    double min = INT_MAX;
+    Vertex best;
+    for (auto it = average.begin(); it != average.end(); it++) {
+        if (it->second < min) {
+            min = it->second;
+            best = it->first;
+        }
+    }
+    return best;
 }
