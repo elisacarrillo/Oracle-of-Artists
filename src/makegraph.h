@@ -18,6 +18,8 @@ class MakeGraph {
         Vertex mindist(std::map<Vertex, int> dist, std::list<Vertex> queue);
         std::map<int, int> BaconNumber(Vertex v1);
         // std::vector<Vertex> MakeGraph::BFS_Path(Vertex v1, Vertex v2);
+        void PrintShortestPath(Vertex artist1, Vertex artist2);
+        const Graph & getGraph() const;
         
 
 

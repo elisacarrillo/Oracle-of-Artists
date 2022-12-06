@@ -15,30 +15,12 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
     
 
     while (std::getline(infile, line) && infile.eof() == false) {
-        // std::cout<<"here 2"<<std::endl;
         std::string content;
         std::vector<std::string> vect;
         std::stringstream ss(line);
         while(std::getline(ss,content,'"')) {
             vect.push_back(content);
-            // std::cout<<content<<std::endl;
         }
-        // std::cout<<vect.size()<<std::endl;
-        // for (unsigned int i = 0; i < vect.size(); i++) {
-        //     std::cout<<"look"<<i<<std::endl;
-        //     if (vect[i].at(0) == ',') {
-        //         vect[i].erase(vect[i].begin());
-        //         // i++;
-
-        //     }
-        //     std::cout<<"deleting"<<std::endl;
-        //     if (i != vect.size() && vect[i].at(vect[i].size()-1) == ',') {
-        //         std::cout<<"deleting 2"<<std::endl;
-        //         vect[i].erase(vect[i].begin() + vect[i].size() -1);
-        //         // i++;
-
-        //     }
-        // }
 
         std::string songName = vect[1];
         std::cout<<"Song name: " << vect[1]<<std::endl;
@@ -51,7 +33,7 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
         std::vector<std::string> artistVect;
         std::stringstream ssTwo(artists);
         std::string person;
-        g_.initSnapshot("YOYO");
+        g_.initSnapshot("Artist Graph");
         while(std::getline(ssTwo,person,',')) {
             
             person.erase(person.begin() + person.size() - 1);
@@ -60,50 +42,47 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
             }
             person.erase(person.begin());
             artistVect.push_back(person);
-            // std::cout<<person<<std::endl;
         }
         for (unsigned int i = 0; i < artistVect.size(); i++) {
             Vertex v = artistVect[i];
-            // if (g_.assertVertexExists(v, ))
             g_.insertVertex(v);
             if (i == 0) {
                 continue;
             }
-            if (i == 1) {
-                g_.insertEdge(artistVect[i], artistVect[i-1]);
-                g_.setEdgeLabel(artistVect[i], artistVect[i-1], songName);
+            for (unsigned int j = 1; j < artistVect.size();j++) {
+                if (j <= i) {
+                    g_.insertEdge(artistVect[i], artistVect[i-j]);
+                    g_.setEdgeLabel(artistVect[i], artistVect[i-j], songName);
+                }
+                
             }
-            // FIXME: if needed add more artists 
+            // if (i == 1) {
+            //     g_.insertEdge(artistVect[i], artistVect[i-1]);
+            //     g_.setEdgeLabel(artistVect[i], artistVect[i-1], songName);
+            // }
+            // if (i == 2) {
+            //     g_.insertEdge(artistVect[i], artistVect[i-1]);
+            //     g_.setEdgeLabel(artistVect[i], artistVect[i-1], songName);
+
+            //     g_.insertEdge(artistVect[i], artistVect[i-2]);
+            //     g_.setEdgeLabel(artistVect[i], artistVect[i-2], songName);
+            // }
+            // if (i == 3) {
+            //     g_.insertEdge(artistVect[i], artistVect[i-1]);
+            //     g_.setEdgeLabel(artistVect[i], artistVect[i-1], songName);
+
+            //     g_.insertEdge(artistVect[i], artistVect[i-2]);
+            //     g_.setEdgeLabel(artistVect[i], artistVect[i-2], songName);
+
+            //     g_.insertEdge(artistVect[i], artistVect[i-3]);
+            //     g_.setEdgeLabel(artistVect[i], artistVect[i-3], songName);
+            // }
+            
         }
-        
         
         std::cout<<"------------------------------------"<<std::endl;
     }
-    // std::cout<<"total Lines is ::" << number_of_lines<<std::endl;
     g_.snapshot();
-    // g_.print();
-     std::vector<Vertex> all_nodes = g_.getVertices();
-    // for(Vertex it: all_nodes) {
-    //     std::cout << counter << ": " << it << ", ";
-    //     counter++;
-    // }
-    // std::cout << "FINDING ADJACENT" << std::endl;
-    // auto it = std::find(all_nodes.begin(), all_nodes.end(), "Pat Mastelotto");
-    // if (it == all_nodes.end())
-    //     {
-    //      std::cout << "Name not here" << std::endl;
-    //     } else {
-    //     auto index = std::distance(all_nodes.begin(), it);
-    //     std::cout << "position is:: " << index << std::endl;
-    //     Vertex v = "Pat Mastelotto";
-    //     getAdjacentNodes(v);
-    // }
-    // Vertex bfs1 = "Martin Garrix";
-    // Vertex bfs2 = "Kanye West";
-    // std::vector<std::pair<Vertex, std::string>> bfs = BFS_Search(bfs1, bfs2);
-    // for (auto v : bfs) {
-    //     std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
-    // }
 
     Vertex dj1 = "Bad Bunny";
     Vertex dj2 = "Shakira";
@@ -125,12 +104,12 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
             std::cout << bacon <<  " Number: " << it->first << " # of People: " << it->second << std::endl;
         }
     }
+    Vertex artist1 = "Taylor Swift";
+    Vertex artist2 = "Coldplay";
+    PrintShortestPath(artist1, artist2);
     
-   
-    // Vertex here = all_nodes.find("Raquel Rodriguez");
     std::cout<<"------------------------------------"<<std::endl;
     std::cout<<"------------------------------------"<<std::endl;
-    // getAdjacentNodes(here);
 }
 
 
@@ -194,14 +173,11 @@ std::vector<std::pair<Vertex, std::string>>  MakeGraph::BFS_Search(Vertex v1, Ve
                 path.push_back(p);
             }
             if (adjacent == v2) {
-                // std::pair<Vertex, std::string> p(adjacent, g_.getEdgeLabel(v1, adjacent));
-                // path.push_back(p);
                return path;
             }
         }
     }
     return path;
-    // std::cout << adj.size() << std::endl;
 }
 
 Vertex MakeGraph::mindist(std::map<Vertex, int> dist, std::list<Vertex> queue) {
@@ -322,47 +298,17 @@ std::map<int, int> MakeGraph::BaconNumber(Vertex v1) {
     return to_return;
 }
 
+void MakeGraph::PrintShortestPath(Vertex artist1, Vertex artist2) {
+    std::vector<std::pair<Vertex, std::string>> path = Dijkstra(artist1, artist2);
+    if (path.empty()) {
+        std::cout << "There is no path." << std::endl;
+    } else {
+        for (auto v : path) {
+            std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
+        }
+    }
+}
 
-// std::vector<Vertex> MakeGraph::BFS_Path(Vertex v1, Vertex v2) {
-//     // Mark all the vertices as not visited
-//     std::map<Vertex, bool> visited;
-//     std::vector<Vertex> v = g_.getVertices();
-//     for (unsigned int i = 0; i < v.size; i++) {
-//         visited.insert(std::pair<Vertex,bool>(v[i], false))
-//     }
-
-//     // Create a queue for BFS
-//     std::list<Vertex> queue;
-//     std::vector<Vertex> path;
-//     // Mark the current node as visited and enqueue it
-//     visited[v] = true;
-//     queue.push_back(v);
- 
-//     while(!queue.empty()) {
-//         // Dequeue a vertex from queue and print it
-//         v = queue.front();
-//         path.push_back(v);
-//         //cout << v << " ";
-//         queue.pop_front();
- 
-//         // Get all adjacent vertices of the dequeued
-//         // vertex s. If a adjacent has not been visited,
-//         // then mark it visited and enqueue it
-//         vector<Vertex> adj = v.getAdjacent();
-//         for (Vertex adjacent : adj) {
-//             if (!visited[adjacent]) {
-//                 visited[adjacent] = true;
-//                 queue.push_back(adjacent);
-//             }
-//             if (adjacent == v2) {
-//                 return path;
-//             }
-//         }
-//     }
-//     return path;
-       
-
-
-
-
-// }
+const Graph & MakeGraph::getGraph() const {
+  return g_;
+}
