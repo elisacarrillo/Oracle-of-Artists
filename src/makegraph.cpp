@@ -1,5 +1,7 @@
 #include "makegraph.h"
 
+#include <chrono>
+#include <thread>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -11,9 +13,8 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
     //for each line create array of artists and make node the name of the song
     std::ifstream infile(filename);
     std::string line;
-    std::cout<<"here"<<std::endl;
-    
-
+    std::cout<<"BUILDING GRAPH"<<std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     while (std::getline(infile, line) && infile.eof() == false) {
         std::string content;
         std::vector<std::string> vect;
@@ -61,104 +62,25 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
         std::cout<<"------------------------------------"<<std::endl;
     }
     g_.snapshot();
-
-    Vertex artist1 = "Taylor Swift";
-    Vertex artist2 = "Coldplay";
-    PrintShortestPath(artist1, artist2);
-
     std::cout<<"------------------------------------"<<std::endl;
+    std::cout<<"Building Page Rank"<<std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    pagerank();
     std::cout<<"------------------------------------"<<std::endl;
 
-    Vertex artist3 = "Johann Sebastian Bach";
-    PrintBaconNumber(artist3);
-    
-    std::cout<<"------------------------------------"<<std::endl;
-    std::cout<<"------------------------------------"<<std::endl;
-    //get most popular artist
-    Vertex artist4 = BestPageRank();
-    std::cout<<"Most popular artist: "<<artist4<<std::endl;
+}
 
-    std::cout<<"------------------------------------"<<std::endl;
-    std::cout<<"------------------------------------"<<std::endl;
-    // std::vector<Vertex> artists = g_.getVertices();
-    // std::cout << "BEST CENTER AWARD GOES TO..." << BestBacon(artists) << std::endl;
-
-
-
+//get graph
+Graph MakeGraph::getGraph() {
+    return g_;
 }
 
 
 
 
-
-std::vector<std::pair<Vertex, std::string>>  MakeGraph::BFS_Search(Vertex v1, Vertex v2) {
-    std::cout << "BFS" << std::endl;
-    // Mark all the vertice as as not visited
-    std::map<Vertex, bool> visited;
-    std::vector<Vertex> v = g_.getVertices();
-    for (unsigned int i = 0; i < v.size(); i++) {
-        visited.insert(std::pair<Vertex,bool>(v[i], false));
-    }
-
-    // Create a queue for BFS
-    std::list<Vertex> queue;
-    std::vector<std::pair<Vertex, std::string>> path;
-    // Mark the current node as visited and enqueue it
-    visited[v1] = true;
-    queue.push_back(v1);
-    while(!queue.empty())
-    {
-        // Dequeue a vertex from queue and print it
-        v1 = queue.front();
-        std::pair<Vertex, std::string> p(v1, "empty");
-        path.push_back(p);
-        //std::cout << v1 << std::endl;
-        queue.pop_front();
-        // if (!queue.empty()) {
-        //     Vertex v_new = queue.front();
-        //     std::vector<Vertex> vec = g_.getAdjacent(v1);
-        //     if ( std::find(vec.begin(), vec.end(), v_new) != vec.end() ) {
-        //         std::pair<Vertex, std::string> p(v1, g_.getEdgeLabel(v1,v_new));
-        //         path.push_back(p);
-        //     }
-        // } else {
-        //     std::pair<Vertex, std::string> p(v1, "empty");
-        //     path.push_back(p);
-        // }
-    
- 
-        // Get all adjacent vertices of the dequeued
-        // vertex s. If a adjacent has not been visited,
-        // then mark it visited and enqueue it
-        std::vector<Vertex> adj = g_.getAdjacent(v1);
-        for (Vertex adjacent : adj) {
-            if (!visited[adjacent]) {
-                visited[adjacent] = true;
-                queue.push_back(adjacent);
-                std::pair<Vertex, std::string> p(adjacent, g_.getEdgeLabel(v1, adjacent));
-                path.push_back(p);
-            }
-            if (adjacent == v2) {
-               return path;
-            }
-        }
-    }
-    return path;
-}
-
-Vertex MakeGraph::mindist(std::map<Vertex, int> dist, std::list<Vertex> queue) {
-    int min = INT_MAX;
-    Vertex to_return;
-    for(std::map<Vertex,int>::iterator iter = dist.begin(); iter != dist.end(); ++iter) {
-        if (iter->second < min && (std::find(queue.begin(), queue.end(), iter->first) != queue.end())) {
-            to_return = iter->first;
-        }
-    }
-    return to_return;
-}
-
-std::vector<std::pair<Vertex, std::string>> MakeGraph::Dijkstra(Vertex v1, Vertex v2) {
-    std::cout << "DIJKSTRA" << std::endl;
+// Get Shortest Path Playist from v1 to v2 using BFS
+std::vector<std::pair<Vertex, std::string>> MakeGraph::BFS(Vertex v1, Vertex v2) {
+    std::cout << "Shortest Path From " << v1 << " To " << v2 << " IS!!!" << std::endl;
     std::map<Vertex, int> dist;
     std::map<Vertex, Vertex> prev;
     std::map<Vertex, bool> visited;
@@ -168,21 +90,17 @@ std::vector<std::pair<Vertex, std::string>> MakeGraph::Dijkstra(Vertex v1, Verte
         dist.insert(std::pair<Vertex,int>(v[i], INT_MAX));
         prev.insert(std::pair<Vertex,Vertex>(v[i], ""));
         visited.insert(std::pair<Vertex,bool>(v[i], false));
-        
     }
     queue.push_back(v1);
     dist[v1] = 0;
     Vertex u = v1;
     int done = 0;
     while(!queue.empty()) {
-        //u = mindist(dist, queue);
         u = queue.front();
-        //std::cout << u << std::endl;
         if (u == v2) {
             done = 1;
             break;
         }
-        //queue.remove(u);  
         queue.pop_front();
         std::vector<Vertex> adj = g_.getAdjacent(u);
         for (Vertex adjacent : adj) {
@@ -217,8 +135,32 @@ std::vector<std::pair<Vertex, std::string>> MakeGraph::Dijkstra(Vertex v1, Verte
     return path;
 }
 
+//Get Minimum Distance Vertex from Queue of Vertices 
+Vertex MakeGraph::mindist(std::map<Vertex, int> dist, std::list<Vertex> queue) {
+    int min = INT_MAX;
+    Vertex to_return;
+    for(std::map<Vertex,int>::iterator iter = dist.begin(); iter != dist.end(); ++iter) {
+        if (iter->second < min && (std::find(queue.begin(), queue.end(), iter->first) != queue.end())) {
+            to_return = iter->first;
+        }
+    }
+    return to_return;
+}
+
+void MakeGraph::PrintShortestPath(Vertex artist1, Vertex artist2) {
+    std::vector<std::pair<Vertex, std::string>> path = BFS(artist1, artist2);
+    if (path.empty()) {
+        std::cout << "There is no path." << std::endl;
+    } else {
+        for (auto v : path) {
+            std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
+        }
+    }
+}
+
+// Get Bacon Table using BFS
 std::map<int, int> MakeGraph::BaconNumber(Vertex v1) {
-    std::cout << v1<<" NUMBER" << std::endl;
+    // std::cout << v1<<" NUMBER IS!!" << std::endl;
     std::map<Vertex, int> dist;
     std::map<Vertex, Vertex> prev;
     std::map<Vertex, bool> visited;
@@ -264,21 +206,7 @@ std::map<int, int> MakeGraph::BaconNumber(Vertex v1) {
     return to_return;
 }
 
-void MakeGraph::PrintShortestPath(Vertex artist1, Vertex artist2) {
-    std::vector<std::pair<Vertex, std::string>> path = Dijkstra(artist1, artist2);
-    if (path.empty()) {
-        std::cout << "There is no path." << std::endl;
-    } else {
-        for (auto v : path) {
-            std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
-        }
-    }
-}
-
-const Graph & MakeGraph::getGraph() const {
-  return g_;
-}
-
+// Print Bacon Table, Total Linkable Artists, Weighted Total, and Print Weighted Bacon Number
 void MakeGraph::PrintBaconNumber(Vertex artist) {
     std::map <int, int> bacon_number = BaconNumber(artist);
     if (bacon_number.empty()) {
@@ -302,48 +230,76 @@ void MakeGraph::PrintBaconNumber(Vertex artist) {
     }
     std::cout << "Weighted Total: " << weighted_total << std::endl;
     //get average artists number
-    std::cout << "Average" << artist << "Number: " << weighted_total / total << std::endl;
+    std::cout << "Average " << artist << " Number: " << weighted_total / total << std::endl;
     
-
-
 }
 
-Vertex MakeGraph::BestBacon(std::vector<Vertex> artists) {
-    std::map<Vertex, double> average;
-    for (Vertex artist : artists) {
+//get artist with lowest Bacon number
+Vertex MakeGraph::LowestBaconNumber() {
+    std::vector<Vertex> v = g_.getVertices();
+    std::map<Vertex, int> lowest;
+    for (Vertex artist : v) {
         std::map <int, int> bacon_number = BaconNumber(artist);
-        //get total amount of linkable artists
         double total = 0;
         for (auto it = bacon_number.begin(); it != bacon_number.end(); it++) {
             total += it->second;
         }
-        //get Weighted total of linkable actors
         double weighted_total = 0;
         for (auto it = bacon_number.begin(); it != bacon_number.end(); it++) {
             weighted_total += it->first * it->second;
         }
-        //get average artists number
-        average.insert(std::pair<Vertex, double>(artist, weighted_total / total));
+        lowest.insert(std::pair<Vertex, int>(artist, weighted_total / total));
     }
-    double min = INT_MAX;
-    Vertex best;
-    for (auto it = average.begin(); it != average.end(); it++) {
+    int min = INT_MAX;
+    Vertex min_artist;
+    for (auto it = lowest.begin(); it != lowest.end(); it++) {
         if (it->second < min) {
             min = it->second;
-            best = it->first;
+            min_artist = it->first;
         }
     }
-    return best;
+    std::cout<<"Artist with lowest Bacon Number: "<<min_artist<<std::endl;
+    return min_artist;
 }
+
+//get artist with highest Bacon number
+Vertex MakeGraph::HighestBaconNumber() {
+    std::vector<Vertex> v = g_.getVertices();
+    std::map<Vertex, int> highest;
+    for (Vertex artist : v) {
+        std::map <int, int> bacon_number = BaconNumber(artist);
+        double total = 0;
+        for (auto it = bacon_number.begin(); it != bacon_number.end(); it++) {
+            total += it->second;
+        }
+        double weighted_total = 0;
+        for (auto it = bacon_number.begin(); it != bacon_number.end(); it++) {
+            weighted_total += it->first * it->second;
+        }
+        highest.insert(std::pair<Vertex, int>(artist, weighted_total / total));
+    }
+    int max = 0;
+    Vertex max_artist;
+    for (auto it = highest.begin(); it != highest.end(); it++) {
+        if (it->second > max) {
+            max = it->second;
+            max_artist = it->first;
+        }
+    }
+    std::cout<<"Artist with highest Bacon Number: "<<max_artist<<std::endl;
+
+    return max_artist;
+}
+
 //implement pagerank to get most popular artist
-std::map<Vertex, double> MakeGraph::pagerank() {
+void MakeGraph::pagerank() {
     std::vector<Vertex> v = g_.getVertices();
     std::map<Vertex, double> pagerank;
     for (Vertex artist : v) {
         pagerank.insert(std::pair<Vertex, double>(artist, 1.0));
     }
     for (int i = 0; i < 10; i++) {
-        std::cout << "Round: " << i << std::endl;
+        std::cout << "PageRank Iteration: " << i << std::endl;
         for (Vertex artist : v) {
             std::vector<Vertex> adj = g_.getAdjacent(artist);
             double sum = 0;
@@ -353,39 +309,46 @@ std::map<Vertex, double> MakeGraph::pagerank() {
             pagerank[artist] = 0.15 + 0.85 * sum;
         }
     }
-    return pagerank;
+    pageRankMap_ = sortPageRankMap(pagerank);
 }
 
-Vertex MakeGraph::BestPageRank() {
-    //get top 10g artists
-    std::map<Vertex, double> pagerank = this->pagerank();
-    std::vector<std::pair<Vertex, double>> top10;
-    for (auto it = pagerank.begin(); it != pagerank.end(); it++) {
-        if (top10.size() < 10) {
-            top10.push_back(std::pair<Vertex, double>(it->first, it->second));
-        } else {
-            std::pair<Vertex, double> min = top10[0];
-            int index = 0;
-            for (unsigned int i = 0; i < top10.size(); i++) {
-                if (top10[i].second < min.second) {
-                    min = top10[i];
-                    index = i;
-                }
-            }
-            if (it->second > min.second) {
-                top10[index] = std::pair<Vertex, double>(it->first, it->second);
-            }
-        }
+
+//sort pagerank map by value
+std::map<Vertex, double> MakeGraph::sortPageRankMap(std::map<Vertex, double> map) {
+    std::vector<std::pair<Vertex, double>> vec;
+    for (auto it = map.begin(); it != map.end(); it++) {
+        vec.push_back(std::pair<Vertex, double>(it->first, it->second));
     }
-    //sort top 10 artists
-    std::sort(top10.begin(), top10.end(), [](const std::pair<Vertex, double> &left, const std::pair<Vertex, double> &right) {
+    std::sort(vec.begin(), vec.end(), [](const std::pair<Vertex, double> &left, const std::pair<Vertex, double> &right) {
         return left.second > right.second;
     });
-    //print top 10
-    for (auto it = top10.begin(); it != top10.end(); it++) {
-        std::cout << it->first << " " << it->second << std::endl;
+    std::map<Vertex, double> sorted;
+    for (auto it = vec.begin(); it != vec.end(); it++) {
+        sorted.insert(std::pair<Vertex, double>(it->first, it->second));
     }
+    return sorted;
+}
 
+//get the index of an artist in a map
+int MakeGraph::ArtistsPopularity(Vertex artist) {
+    std::map<Vertex, double> map = pageRankMap_;
+    int i = 0;
+    for (auto it = map.begin(); it != map.end(); it++) {
+        if (it->first == artist) {
+            std::cout<< artist << " is the "<< i << " most popular artist out of " << g_.getVertices().size() << " using PageRank"<<std::endl;
+            return i;
+
+        }
+        i++;
+    }
+    
+    return -1;
+}
+
+
+//get highest ranked artist pagerank
+Vertex MakeGraph::MostPopularArtist() {
+    std::map<Vertex, double> pagerank = pageRankMap_;
     double max = 0;
     Vertex best;
     for (auto it = pagerank.begin(); it != pagerank.end(); it++) {
@@ -394,6 +357,6 @@ Vertex MakeGraph::BestPageRank() {
             best = it->first;
         }
     }
+    std::cout<<"Most popular artist through PageRank: "<< best<<std::endl;
     return best;
 }
- 
