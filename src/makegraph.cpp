@@ -62,14 +62,14 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
     }
     g_.snapshot();
 
-    Vertex artist1 = "Taylor Swift";
-    Vertex artist2 = "Coldplay";
+    Vertex artist1 = "The Weeknd";
+    Vertex artist2 = "Ariana Grande";
     PrintShortestPath(artist1, artist2);
 
     std::cout<<"------------------------------------"<<std::endl;
     std::cout<<"------------------------------------"<<std::endl;
 
-    Vertex artist3 = "Johann Sebastian Bach";
+    Vertex artist3 = "The Weeknd";
     PrintBaconNumber(artist3);
     
     std::cout<<"------------------------------------"<<std::endl;
@@ -82,6 +82,11 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
     std::cout<<"------------------------------------"<<std::endl;
     // std::vector<Vertex> artists = g_.getVertices();
     // std::cout << "BEST CENTER AWARD GOES TO..." << BestBacon(artists) << std::endl;
+    std::cout<<"MST"<<std::endl;
+    makeMST(artist1, artist2);
+    std::cout<<"------------------------------------"<<std::endl;
+    std::cout<<"------------------------------------"<<std::endl;
+
 
 
 
@@ -165,6 +170,7 @@ std::vector<std::pair<Vertex, std::string>> MakeGraph::Dijkstra(Vertex v1, Verte
     std::list<Vertex> queue;
     std::vector<Vertex> v = g_.getVertices();
     for (unsigned int i = 0; i < v.size(); i++) {
+        // std::cout<<"one"<<std::endl;
         dist.insert(std::pair<Vertex,int>(v[i], INT_MAX));
         prev.insert(std::pair<Vertex,Vertex>(v[i], ""));
         visited.insert(std::pair<Vertex,bool>(v[i], false));
@@ -176,6 +182,7 @@ std::vector<std::pair<Vertex, std::string>> MakeGraph::Dijkstra(Vertex v1, Verte
     int done = 0;
     while(!queue.empty()) {
         //u = mindist(dist, queue);
+        // std::cout<<"two"<<std::endl;
         u = queue.front();
         //std::cout << u << std::endl;
         if (u == v2) {
@@ -203,6 +210,7 @@ std::vector<std::pair<Vertex, std::string>> MakeGraph::Dijkstra(Vertex v1, Verte
         return path;
     }
     if (prev[u] != "" || u == v1) {
+        // std::cout<<"three"<<std::endl;
         while(u != "") {
             std::string label;
             if (g_.edgeExists(u, prev[u]))
@@ -397,3 +405,48 @@ Vertex MakeGraph::BestPageRank() {
     return best;
 }
  
+//implement Prims using a priority queue to get shortest path from starting artist to ending artist
+void MakeGraph::makeMST(Vertex startingArtist, Vertex endingArtist) {
+    std::vector<Vertex> v = g_.getVertices();
+    std::map<Vertex, double> distance;
+    std::map<Vertex, Vertex> parent;
+    std::map<Vertex, bool> visited;
+    for (Vertex artist : v) {
+        distance.insert(std::pair<Vertex, double>(artist, INT_MAX));
+        parent.insert(std::pair<Vertex, Vertex>(artist, ""));
+        visited.insert(std::pair<Vertex, bool>(artist, false));
+    }
+    distance[startingArtist] = 0;
+    std::priority_queue<std::pair<Vertex, double>, std::vector<std::pair<Vertex, double>>, std::greater<std::pair<Vertex, double>>> pq;
+    pq.push(std::pair<Vertex, double>(startingArtist, 0));
+    while (!pq.empty()) {
+        Vertex u = pq.top().first;
+        pq.pop();
+        visited[u] = true;
+        std::vector<Vertex> adj = g_.getAdjacent(u);
+        for (Vertex artist : adj) {
+            if (!visited[artist]) {
+                double weight = g_.getEdgeWeight(u, artist);
+                if (distance[artist] > weight) {
+                    distance[artist] = weight;
+                    parent[artist] = u;
+                    pq.push(std::pair<Vertex, double>(artist, distance[artist]));
+                }
+            }
+        }
+    }
+    std::vector<std::pair<Vertex, std::string>> path;
+    Vertex current = endingArtist;
+    while (current != startingArtist) {
+        std::string songs = g_.getEdgeLabel(parent[current], current);
+        path.push_back(std::pair<Vertex, std::string>(current, songs));
+        // for (std::string song : songs) {
+        //     ;
+        // }
+        current = parent[current];
+    }
+    std::reverse(path.begin(), path.end());
+    for (auto v : path) {
+        std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
+    }
+}

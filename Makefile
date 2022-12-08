@@ -8,6 +8,8 @@ tests: bin/tests
 bin/exec: src/makegraph.cpp src/main.cpp nim_graph/graph.cpp 
 	${CXX} ${CXX_FLAGS} src/main.cpp src/makegraph.cpp nim_graph/graph.cpp -o bin/exec
 
+bin/main: src/makegraph.cpp src/main.cpp nim_graph/graph.cpp 
+	${CXX} ${CXX_FLAGS} src/main.cpp src/makegraph.cpp nim_graph/graph.cpp -o bin/exec
 
 obj/catch.o: tests/catch.cc
 	$(CXX) $(CXX_FLAGS) -c $^ -o $@

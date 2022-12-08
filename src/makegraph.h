@@ -23,6 +23,7 @@ class MakeGraph {
         Vertex BestBacon(std::vector<Vertex> artists);
         std::map<Vertex, double> pagerank();
         Vertex BestPageRank();
+        void makeMST(Vertex startingArtist, Vertex endingArtist);
         
 
 
