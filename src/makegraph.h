@@ -24,6 +24,7 @@ class MakeGraph {
         std::map<Vertex, double> pagerank();
         Vertex BestPageRank();
         void makeMST(Vertex startingArtist, Vertex endingArtist);
+        std::vector<Vertex> cycleDetection(Vertex startingArtist);
         
 
 

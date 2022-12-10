@@ -63,27 +63,35 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
     g_.snapshot();
 
     Vertex artist1 = "The Weeknd";
-    Vertex artist2 = "Ariana Grande";
-    PrintShortestPath(artist1, artist2);
+    // Vertex artist2 = "Ariana Grande";
+    // PrintShortestPath(artist1, artist2);
 
-    std::cout<<"------------------------------------"<<std::endl;
-    std::cout<<"------------------------------------"<<std::endl;
+    // std::cout<<"------------------------------------"<<std::endl;
+    // std::cout<<"------------------------------------"<<std::endl;
 
-    Vertex artist3 = "The Weeknd";
-    PrintBaconNumber(artist3);
+    // Vertex artist3 = "The Weeknd";
+    // PrintBaconNumber(artist3);
     
-    std::cout<<"------------------------------------"<<std::endl;
-    std::cout<<"------------------------------------"<<std::endl;
-    //get most popular artist
-    Vertex artist4 = BestPageRank();
-    std::cout<<"Most popular artist: "<<artist4<<std::endl;
+    // std::cout<<"------------------------------------"<<std::endl;
+    // std::cout<<"------------------------------------"<<std::endl;
+    // //get most popular artist
+    // Vertex artist4 = BestPageRank();
+    // std::cout<<"Most popular artist: "<<artist4<<std::endl;
 
+    // // std::cout<<"------------------------------------"<<std::endl;
+    // // std::cout<<"------------------------------------"<<std::endl;
+    // // // std::vector<Vertex> artists = g_.getVertices();
+    // // // std::cout << "BEST CENTER AWARD GOES TO..." << BestBacon(artists) << std::endl;
+    // // std::cout<<"MST"<<std::endl;
+    // // makeMST(artist1, artist2);
     std::cout<<"------------------------------------"<<std::endl;
     std::cout<<"------------------------------------"<<std::endl;
-    // std::vector<Vertex> artists = g_.getVertices();
-    // std::cout << "BEST CENTER AWARD GOES TO..." << BestBacon(artists) << std::endl;
-    std::cout<<"MST"<<std::endl;
-    makeMST(artist1, artist2);
+    std::cout<<"Cycle Detection"<<std::endl;
+    std::vector<Vertex> cycle = cycleDetection(artist1);
+    //print cycle
+    for (unsigned int i = 0; i < cycle.size(); i++) {
+        std::cout<<cycle[i]<<std::endl;
+    }
     std::cout<<"------------------------------------"<<std::endl;
     std::cout<<"------------------------------------"<<std::endl;
 
@@ -449,4 +457,47 @@ void MakeGraph::makeMST(Vertex startingArtist, Vertex endingArtist) {
     for (auto v : path) {
         std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
     }
+}
+
+
+// cycle detection using BFS from starting artist to ending artist return the cycle if there is one
+std::vector<Vertex> MakeGraph::cycleDetection(Vertex startingArtist) {
+    std::vector<Vertex> v = g_.getVertices();
+    std::map<Vertex, Vertex> parent;
+    std::map<Vertex, bool> visited;
+    for (Vertex artist : v) {
+        parent.insert(std::pair<Vertex, Vertex>(artist, ""));
+        visited.insert(std::pair<Vertex, bool>(artist, false));
+    }
+    std::queue<Vertex> q;
+    q.push(startingArtist);
+    visited[startingArtist] = true;
+    int count = 0;
+    while (!q.empty()) {
+        // std::cout<<"Count: "<<count++<<std::endl;
+        Vertex u = q.front();
+        q.pop();
+        std::vector<Vertex> adj = g_.getAdjacent(u);
+        for (Vertex artist : adj) {
+            // std::cout<<"artist searched : " <<artist<<std::endl;
+            if (!visited[artist]) {
+                visited[artist] = true;
+                parent[artist] = u;
+                q.push(artist);
+            } else if (parent[u] != artist) {
+                std::vector<Vertex> cycle;
+                Vertex current = artist;
+                while (current != u && current != "") {
+                    // std::cout<<"Current: "<<current<<std::endl;
+                    cycle.push_back(current);
+                    current = parent[current];
+                }
+                cycle.push_back(u);
+                std::reverse(cycle.begin(), cycle.end());
+                return cycle;
+            }
+        }
+    }
+    std::vector<Vertex> empty;
+    return empty;
 }
