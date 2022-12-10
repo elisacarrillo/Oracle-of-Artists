@@ -17,8 +17,15 @@ class MakeGraph {
         Vertex mindist(std::map<Vertex, int> dist, std::list<Vertex> queue);
         void PrintShortestPath(Vertex artist1, Vertex artist2);
 
-        std::map<int, int> BaconNumber(Vertex v1);
+        const Graph & getGraph() const;
         void PrintBaconNumber(Vertex artist);
+        Vertex BestBacon(std::vector<Vertex> artists);
+        // std::map<Vertex, double> pagerank();
+        // Vertex BestPageRank();
+        void makeMST(Vertex startingArtist, Vertex endingArtist);
+        std::vector<Vertex> cycleDetection(Vertex startingArtist);
+        std::map<int, int> BaconNumber(Vertex v1);
+        // void PrintBaconNumber(Vertex artist);
         Vertex LowestBaconNumber();
         Vertex HighestBaconNumber();
 
@@ -26,6 +33,10 @@ class MakeGraph {
         std::map<Vertex, double> sortPageRankMap(std::map<Vertex, double> map);
         int ArtistsPopularity(Vertex artist);
         Vertex MostPopularArtist();
+        
+
+
+        
 
 
     private:

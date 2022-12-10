@@ -62,10 +62,44 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
         std::cout<<"------------------------------------"<<std::endl;
     }
     g_.snapshot();
+
+
+    Vertex artist1 = "The Weeknd";
+    Vertex artist2 = "Ariana Grande";
+    PrintShortestPath(artist1, artist2);
+
+    std::cout<<"------------------------------------"<<std::endl;
+    std::cout<<"------------------------------------"<<std::endl;
+
+    Vertex artist3 = "The Weeknd";
+    PrintBaconNumber(artist3);
+    
+    std::cout<<"------------------------------------"<<std::endl;
+    std::cout<<"------------------------------------"<<std::endl;
+    //get most popular artist
+    // Vertex artist4 = BestPageRank();
+    // std::cout<<"Most popular artist: "<<artist4<<std::endl;
+
+    // std::cout<<"------------------------------------"<<std::endl;
+    // std::cout<<"------------------------------------"<<std::endl;
+    // // std::vector<Vertex> artists = g_.getVertices();
+    // // std::cout << "BEST CENTER AWARD GOES TO..." << BestBacon(artists) << std::endl;
+    // std::cout<<"MST"<<std::endl;
+    // makeMST(artist1, artist2);
+
     std::cout<<"------------------------------------"<<std::endl;
     std::cout<<"Building Page Rank"<<std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(2));
     pagerank();
+    std::cout<<"------------------------------------"<<std::endl;
+    std::cout<<"------------------------------------"<<std::endl;
+    std::cout<<"Cycle Detection"<<std::endl;
+    std::vector<Vertex> cycle = cycleDetection(artist1);
+    //print cycle
+    for (unsigned int i = 0; i < cycle.size(); i++) {
+        std::cout<<cycle[i]<<std::endl;
+    }
+    std::cout<<"------------------------------------"<<std::endl;
     std::cout<<"------------------------------------"<<std::endl;
 
 }
@@ -87,6 +121,7 @@ std::vector<std::pair<Vertex, std::string>> MakeGraph::BFS(Vertex v1, Vertex v2)
     std::list<Vertex> queue;
     std::vector<Vertex> v = g_.getVertices();
     for (unsigned int i = 0; i < v.size(); i++) {
+        // std::cout<<"one"<<std::endl;
         dist.insert(std::pair<Vertex,int>(v[i], INT_MAX));
         prev.insert(std::pair<Vertex,Vertex>(v[i], ""));
         visited.insert(std::pair<Vertex,bool>(v[i], false));
@@ -96,6 +131,8 @@ std::vector<std::pair<Vertex, std::string>> MakeGraph::BFS(Vertex v1, Vertex v2)
     Vertex u = v1;
     int done = 0;
     while(!queue.empty()) {
+        //u = mindist(dist, queue);
+        // std::cout<<"two"<<std::endl;
         u = queue.front();
         if (u == v2) {
             done = 1;
@@ -121,6 +158,7 @@ std::vector<std::pair<Vertex, std::string>> MakeGraph::BFS(Vertex v1, Vertex v2)
         return path;
     }
     if (prev[u] != "" || u == v1) {
+        // std::cout<<"three"<<std::endl;
         while(u != "") {
             std::string label;
             if (g_.edgeExists(u, prev[u]))
@@ -360,3 +398,94 @@ Vertex MakeGraph::MostPopularArtist() {
     std::cout<<"Most popular artist through PageRank: "<< best<<std::endl;
     return best;
 }
+
+ 
+//implement Prims using a priority queue to get shortest path from starting artist to ending artist
+void MakeGraph::makeMST(Vertex startingArtist, Vertex endingArtist) {
+    std::vector<Vertex> v = g_.getVertices();
+    std::map<Vertex, double> distance;
+    std::map<Vertex, Vertex> parent;
+    std::map<Vertex, bool> visited;
+    for (Vertex artist : v) {
+        distance.insert(std::pair<Vertex, double>(artist, INT_MAX));
+        parent.insert(std::pair<Vertex, Vertex>(artist, ""));
+        visited.insert(std::pair<Vertex, bool>(artist, false));
+    }
+    distance[startingArtist] = 0;
+    std::priority_queue<std::pair<Vertex, double>, std::vector<std::pair<Vertex, double>>, std::greater<std::pair<Vertex, double>>> pq;
+    pq.push(std::pair<Vertex, double>(startingArtist, 0));
+    while (!pq.empty()) {
+        Vertex u = pq.top().first;
+        pq.pop();
+        visited[u] = true;
+        std::vector<Vertex> adj = g_.getAdjacent(u);
+        for (Vertex artist : adj) {
+            if (!visited[artist]) {
+                double weight = g_.getEdgeWeight(u, artist);
+                if (distance[artist] > weight) {
+                    distance[artist] = weight;
+                    parent[artist] = u;
+                    pq.push(std::pair<Vertex, double>(artist, distance[artist]));
+                }
+            }
+        }
+    }
+    std::vector<std::pair<Vertex, std::string>> path;
+    Vertex current = endingArtist;
+    while (current != startingArtist) {
+        std::string songs = g_.getEdgeLabel(parent[current], current);
+        path.push_back(std::pair<Vertex, std::string>(current, songs));
+        // for (std::string song : songs) {
+        //     ;
+        // }
+        current = parent[current];
+    }
+    std::reverse(path.begin(), path.end());
+    for (auto v : path) {
+        std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
+    }
+}
+
+
+// cycle detection using BFS from starting artist to ending artist return the cycle if there is one
+std::vector<Vertex> MakeGraph::cycleDetection(Vertex startingArtist) {
+    std::vector<Vertex> v = g_.getVertices();
+    std::map<Vertex, Vertex> parent;
+    std::map<Vertex, bool> visited;
+    for (Vertex artist : v) {
+        parent.insert(std::pair<Vertex, Vertex>(artist, ""));
+        visited.insert(std::pair<Vertex, bool>(artist, false));
+    }
+    std::queue<Vertex> q;
+    q.push(startingArtist);
+    visited[startingArtist] = true;
+    // int count = 0;
+    while (!q.empty()) {
+        // std::cout<<"Count: "<<count++<<std::endl;
+        Vertex u = q.front();
+        q.pop();
+        std::vector<Vertex> adj = g_.getAdjacent(u);
+        for (Vertex artist : adj) {
+            // std::cout<<"artist searched : " <<artist<<std::endl;
+            if (!visited[artist]) {
+                visited[artist] = true;
+                parent[artist] = u;
+                q.push(artist);
+            } else if (parent[u] != artist) {
+                std::vector<Vertex> cycle;
+                Vertex current = artist;
+                while (current != u && current != "") {
+                    // std::cout<<"Current: "<<current<<std::endl;
+                    cycle.push_back(current);
+                    current = parent[current];
+                }
+                cycle.push_back(u);
+                std::reverse(cycle.begin(), cycle.end());
+                return cycle;
+            }
+        }
+    }
+    std::vector<Vertex> empty;
+    return empty;
+}
+
