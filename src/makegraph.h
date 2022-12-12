@@ -14,30 +14,31 @@ class MakeGraph {
         Graph getGraph();
 
         std::vector<std::pair<Vertex, std::string>> BFS(Vertex v1, Vertex v2);
-        Vertex mindist(std::map<Vertex, int> dist, std::list<Vertex> queue);
-        void PrintShortestPath(Vertex artist1, Vertex artist2);
+        // Vertex mindist(std::map<Vertex, int> dist, std::list<Vertex> queue);
+        void printPathBFS(std::vector<std::pair<Vertex, std::string>> path);
 
-        const Graph & getGraph() const;
-        void PrintBaconNumber(Vertex artist);
-        Vertex BestBacon(std::vector<Vertex> artists);
-        // std::map<Vertex, double> pagerank();
-        // Vertex BestPageRank();
-        void makeMST(Vertex startingArtist, Vertex endingArtist);
-        std::vector<Vertex> cycleDetection(Vertex startingArtist);
+
         std::map<int, int> BaconNumber(Vertex v1);
-        // void PrintBaconNumber(Vertex artist);
+        void PrintBaconNumber(Vertex artist);
         Vertex LowestBaconNumber();
         Vertex HighestBaconNumber();
+
 
         void pagerank();
         std::map<Vertex, double> sortPageRankMap(std::map<Vertex, double> map);
         int ArtistsPopularity(Vertex artist);
         Vertex MostPopularArtist();
-        
 
 
-        
+        std::vector<std::pair<Vertex, std::string>> makeMST(Vertex startingArtist, Vertex endingArtist);
+        void printPathMST(std::vector<std::pair<Vertex, std::string>> path);
+                
+        int countConnectedComponents();
+        void connectedComponentsHelper(Vertex u, std::map<Vertex, bool> &visited);
+        void makeHistogram();
+        void histogramHelper(Vertex u, std::map<Vertex, bool> &visited, int &count);
 
+        Vertex getRandomArtist();
 
     private:
         Graph g_;

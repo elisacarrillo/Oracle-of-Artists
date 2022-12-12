@@ -1,5 +1,6 @@
 #include "makegraph.h"
 
+
 #include <chrono>
 #include <thread>
 #include <iostream>
@@ -7,13 +8,14 @@
 #include <vector>
 #include <map>
 #include <queue>
+#include <algorithm>
 using namespace std;
 
 MakeGraph::MakeGraph(string filename) : g_(false, false) {
     //for each line create array of artists and make node the name of the song
     std::ifstream infile(filename);
     std::string line;
-    std::cout<<"BUILDING GRAPH"<<std::endl;
+    std::cout<<"-------------BUILDING GRAPH---------------"<<std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(2));
     while (std::getline(infile, line) && infile.eof() == false) {
         std::string content;
@@ -62,45 +64,8 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
         std::cout<<"------------------------------------"<<std::endl;
     }
     g_.snapshot();
-
-
-    Vertex artist1 = "The Weeknd";
-    Vertex artist2 = "Ariana Grande";
-    PrintShortestPath(artist1, artist2);
-
-    std::cout<<"------------------------------------"<<std::endl;
-    std::cout<<"------------------------------------"<<std::endl;
-
-    Vertex artist3 = "The Weeknd";
-    PrintBaconNumber(artist3);
-    
-    std::cout<<"------------------------------------"<<std::endl;
-    std::cout<<"------------------------------------"<<std::endl;
-    //get most popular artist
-    // Vertex artist4 = BestPageRank();
-    // std::cout<<"Most popular artist: "<<artist4<<std::endl;
-
-    // std::cout<<"------------------------------------"<<std::endl;
-    // std::cout<<"------------------------------------"<<std::endl;
-    // // std::vector<Vertex> artists = g_.getVertices();
-    // // std::cout << "BEST CENTER AWARD GOES TO..." << BestBacon(artists) << std::endl;
-    // std::cout<<"MST"<<std::endl;
-    // makeMST(artist1, artist2);
-
-    std::cout<<"------------------------------------"<<std::endl;
-    std::cout<<"Building Page Rank"<<std::endl;
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::cout<<"-------------BUILDING PAGERANK---------------"<<std::endl;
     pagerank();
-    std::cout<<"------------------------------------"<<std::endl;
-    std::cout<<"------------------------------------"<<std::endl;
-    std::cout<<"Cycle Detection"<<std::endl;
-    std::vector<Vertex> cycle = cycleDetection(artist1);
-    //print cycle
-    for (unsigned int i = 0; i < cycle.size(); i++) {
-        std::cout<<cycle[i]<<std::endl;
-    }
-    std::cout<<"------------------------------------"<<std::endl;
-    std::cout<<"------------------------------------"<<std::endl;
 
 }
 
@@ -108,9 +73,6 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
 Graph MakeGraph::getGraph() {
     return g_;
 }
-
-
-
 
 // Get Shortest Path Playist from v1 to v2 using BFS
 std::vector<std::pair<Vertex, std::string>> MakeGraph::BFS(Vertex v1, Vertex v2) {
@@ -170,33 +132,22 @@ std::vector<std::pair<Vertex, std::string>> MakeGraph::BFS(Vertex v1, Vertex v2)
             u = prev[u];
         }
     }
+    printPathBFS(path);
     return path;
-}
 
-//Get Minimum Distance Vertex from Queue of Vertices 
-Vertex MakeGraph::mindist(std::map<Vertex, int> dist, std::list<Vertex> queue) {
-    int min = INT_MAX;
-    Vertex to_return;
-    for(std::map<Vertex,int>::iterator iter = dist.begin(); iter != dist.end(); ++iter) {
-        if (iter->second < min && (std::find(queue.begin(), queue.end(), iter->first) != queue.end())) {
-            to_return = iter->first;
+}
+//print path
+void MakeGraph::printPathBFS(std::vector<std::pair<Vertex, std::string>> path) {
+    for (unsigned int i = 0; i < path.size(); i++) {
+        std::cout << path[i].first << " " << std::endl;
+        if (path[i].second != "empty") {
+            std::cout << " - " << path[i].second << " - " << std::endl;
         }
     }
-    return to_return;
+    std::cout << std::endl;
 }
 
-void MakeGraph::PrintShortestPath(Vertex artist1, Vertex artist2) {
-    std::vector<std::pair<Vertex, std::string>> path = BFS(artist1, artist2);
-    if (path.empty()) {
-        std::cout << "There is no path." << std::endl;
-    } else {
-        for (auto v : path) {
-            std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
-        }
-    }
-}
-
-// Get Bacon Table using BFS
+// Get Bacon Table using BFS AKA betweenness centrality
 std::map<int, int> MakeGraph::BaconNumber(Vertex v1) {
     // std::cout << v1<<" NUMBER IS!!" << std::endl;
     std::map<Vertex, int> dist;
@@ -399,9 +350,9 @@ Vertex MakeGraph::MostPopularArtist() {
     return best;
 }
 
- 
-//implement Prims using a priority queue to get shortest path from starting artist to ending artist
-void MakeGraph::makeMST(Vertex startingArtist, Vertex endingArtist) {
+
+//Prims algorithm to get shortest path from starting artist to ending artist for unweighted graph
+std::vector<std::pair<Vertex, std::string>> MakeGraph::makeMST(Vertex startingArtist, Vertex endingArtist) {
     std::vector<Vertex> v = g_.getVertices();
     std::map<Vertex, double> distance;
     std::map<Vertex, Vertex> parent;
@@ -417,75 +368,107 @@ void MakeGraph::makeMST(Vertex startingArtist, Vertex endingArtist) {
     while (!pq.empty()) {
         Vertex u = pq.top().first;
         pq.pop();
-        visited[u] = true;
-        std::vector<Vertex> adj = g_.getAdjacent(u);
-        for (Vertex artist : adj) {
-            if (!visited[artist]) {
-                double weight = g_.getEdgeWeight(u, artist);
-                if (distance[artist] > weight) {
-                    distance[artist] = weight;
-                    parent[artist] = u;
+        if (visited[u] == false) {
+            visited[u] = true;
+            std::vector<Vertex> adj = g_.getAdjacent(u);
+            for (Vertex artist : adj) {
+                if (visited[artist] == false && distance[artist] > 1) {
+                    distance[artist] = 1;
                     pq.push(std::pair<Vertex, double>(artist, distance[artist]));
+                    parent[artist] = u;
                 }
             }
         }
     }
+    
+    std::cout << "Playlist from " << startingArtist << " to " << endingArtist << " is: " << std::endl;
     std::vector<std::pair<Vertex, std::string>> path;
     Vertex current = endingArtist;
     while (current != startingArtist) {
         std::string songs = g_.getEdgeLabel(parent[current], current);
         path.push_back(std::pair<Vertex, std::string>(current, songs));
-        // for (std::string song : songs) {
-        //     ;
-        // }
         current = parent[current];
     }
     std::reverse(path.begin(), path.end());
-    for (auto v : path) {
-        std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
+    printPathBFS(path);
+    return path;
+}
+
+//print path 
+void MakeGraph::printPathMST(std::vector<std::pair<Vertex, std::string>> path) {
+    for (std::pair<Vertex, std::string> p : path) {
+        std::cout << p.first << " " << p.second << std::endl;
     }
 }
 
 
-// cycle detection using BFS from starting artist to ending artist return the cycle if there is one
-std::vector<Vertex> MakeGraph::cycleDetection(Vertex startingArtist) {
+//count connected components using DFS
+int MakeGraph::countConnectedComponents() {
     std::vector<Vertex> v = g_.getVertices();
-    std::map<Vertex, Vertex> parent;
     std::map<Vertex, bool> visited;
     for (Vertex artist : v) {
-        parent.insert(std::pair<Vertex, Vertex>(artist, ""));
         visited.insert(std::pair<Vertex, bool>(artist, false));
     }
-    std::queue<Vertex> q;
-    q.push(startingArtist);
-    visited[startingArtist] = true;
-    // int count = 0;
-    while (!q.empty()) {
-        // std::cout<<"Count: "<<count++<<std::endl;
-        Vertex u = q.front();
-        q.pop();
-        std::vector<Vertex> adj = g_.getAdjacent(u);
-        for (Vertex artist : adj) {
-            // std::cout<<"artist searched : " <<artist<<std::endl;
-            if (!visited[artist]) {
-                visited[artist] = true;
-                parent[artist] = u;
-                q.push(artist);
-            } else if (parent[u] != artist) {
-                std::vector<Vertex> cycle;
-                Vertex current = artist;
-                while (current != u && current != "") {
-                    // std::cout<<"Current: "<<current<<std::endl;
-                    cycle.push_back(current);
-                    current = parent[current];
-                }
-                cycle.push_back(u);
-                std::reverse(cycle.begin(), cycle.end());
-                return cycle;
+    int count = 0;
+    for (Vertex artist : v) {
+        if (!visited[artist]) {
+            count++;
+            connectedComponentsHelper(artist, visited);
+        }
+    }
+    return count;
+}
+//connected components DFS
+void MakeGraph::connectedComponentsHelper(Vertex u, std::map<Vertex, bool> &visited) {
+    visited[u] = true;
+    std::vector<Vertex> adj = g_.getAdjacent(u);
+    for (Vertex artist : adj) {
+        if (!visited[artist]) {
+            connectedComponentsHelper(artist, visited);
+        }
+    }
+}
+
+// make historgram with sizes of connetcted components
+void MakeGraph::makeHistogram() {
+    std::vector<Vertex> v = g_.getVertices();
+    std::map<Vertex, bool> visited;
+    for (Vertex artist : v) {
+        visited.insert(std::pair<Vertex, bool>(artist, false));
+    }
+    std::map<int, int> histogram;
+    for (Vertex artist : v) {
+        if (!visited[artist]) {
+            int count = 0;
+            histogramHelper(artist, visited, count);
+            if (histogram.find(count) == histogram.end()) {
+                histogram.insert(std::pair<int, int>(count, 1));
+            } else {
+                histogram[count]++;
             }
         }
     }
-    std::vector<Vertex> empty;
-    return empty;
+    for (auto v : histogram) {
+        std::cout << "Size: " << v.first << " Number of components: " << v.second << std::endl;
+    }
 }
 
+//connectedComponentsHelper for histogram
+void MakeGraph::histogramHelper(Vertex u, std::map<Vertex, bool> &visited, int &count) {
+    visited[u] = true;
+    count++;
+    std::vector<Vertex> adj = g_.getAdjacent(u);
+    for (Vertex artist : adj) {
+        if (!visited[artist]) {
+            histogramHelper(artist, visited, count);
+        }
+    }
+}
+
+//get random artist
+Vertex MakeGraph::getRandomArtist() {
+    std::vector<Vertex> v = g_.getVertices();
+    int random = rand() % v.size();
+    std::cout << "Random artist: " << random << std::endl;
+    return v[random];
+}
