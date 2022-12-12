@@ -465,10 +465,4 @@ void MakeGraph::histogramHelper(Vertex u, std::map<Vertex, bool> &visited, int &
     }
 }
 
-//get random artist
-Vertex MakeGraph::getRandomArtist() {
-    std::vector<Vertex> v = g_.getVertices();
-    int random = rand() % v.size();
-    std::cout << "Random artist: " << random << std::endl;
-    return v[random];
-}
+

@@ -6,12 +6,9 @@
 int main() {
     MakeGraph g = MakeGraph("tracks_twoartists.txt");
 
-    Vertex artist1 = g.getRandomArtist();
-    Vertex artist2 = g.getRandomArtist();
-
     //ENTER YOUR OWN ARTISTS HERE
-    // Vertex artist1 = "Idina Menzel";
-    // Vertex artist2 = "Shawn Mendes";
+    Vertex artist1 = "Idina Menzel";
+    Vertex artist2 = "Shawn Mendes";
 
     std::cout << "Artists 1 is: " << artist1 << std::endl;
     std::cout << "Artists 2 is: " << artist2 << std::endl;
