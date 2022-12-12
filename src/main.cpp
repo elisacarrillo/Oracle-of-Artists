@@ -9,6 +9,12 @@ int main() {
     //ENTER YOUR OWN ARTISTS HERE
     Vertex artist1 = "Idina Menzel";
     Vertex artist2 = "Shawn Mendes";
+    std::cout<<"Choose your first Artist: ";
+    // std::cin>>artist1;
+    getline(std::cin, artist1);
+    std::cout<<"Choose your second Artist: ";
+    getline(std::cin, artist2);
+    
 
     std::cout << "Artists 1 is: " << artist1 << std::endl;
     std::cout << "Artists 2 is: " << artist2 << std::endl;
