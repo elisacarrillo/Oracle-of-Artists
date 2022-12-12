@@ -1,5 +1,6 @@
 #include "makegraph.h"
 
+
 #include <chrono>
 #include <thread>
 #include <iostream>
@@ -7,13 +8,14 @@
 #include <vector>
 #include <map>
 #include <queue>
+#include <algorithm>
 using namespace std;
 
 MakeGraph::MakeGraph(string filename) : g_(false, false) {
     //for each line create array of artists and make node the name of the song
     std::ifstream infile(filename);
     std::string line;
-    std::cout<<"BUILDING GRAPH"<<std::endl;
+    std::cout<<"-------------BUILDING GRAPH---------------"<<std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(2));
     while (std::getline(infile, line) && infile.eof() == false) {
         std::string content;
@@ -62,7 +64,8 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
         std::cout<<"------------------------------------"<<std::endl;
     }
     g_.snapshot();
-    // pagerank();
+    std::cout<<"-------------BUILDING PAGERANK---------------"<<std::endl;
+    pagerank();
 
 }
 
@@ -70,9 +73,6 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
 Graph MakeGraph::getGraph() {
     return g_;
 }
-
-
-
 
 // Get Shortest Path Playist from v1 to v2 using BFS
 std::vector<std::pair<Vertex, std::string>> MakeGraph::BFS(Vertex v1, Vertex v2) {
@@ -132,33 +132,22 @@ std::vector<std::pair<Vertex, std::string>> MakeGraph::BFS(Vertex v1, Vertex v2)
             u = prev[u];
         }
     }
+    printPathBFS(path);
     return path;
-}
 
-//Get Minimum Distance Vertex from Queue of Vertices 
-Vertex MakeGraph::mindist(std::map<Vertex, int> dist, std::list<Vertex> queue) {
-    int min = INT_MAX;
-    Vertex to_return;
-    for(std::map<Vertex,int>::iterator iter = dist.begin(); iter != dist.end(); ++iter) {
-        if (iter->second < min && (std::find(queue.begin(), queue.end(), iter->first) != queue.end())) {
-            to_return = iter->first;
+}
+//print path
+void MakeGraph::printPathBFS(std::vector<std::pair<Vertex, std::string>> path) {
+    for (unsigned int i = 0; i < path.size(); i++) {
+        std::cout << path[i].first << " " << std::endl;
+        if (path[i].second != "empty") {
+            std::cout << " - " << path[i].second << " - " << std::endl;
         }
     }
-    return to_return;
+    std::cout << std::endl;
 }
 
-void MakeGraph::PrintShortestPath(Vertex artist1, Vertex artist2) {
-    std::vector<std::pair<Vertex, std::string>> path = BFS(artist1, artist2);
-    if (path.empty()) {
-        std::cout << "There is no path." << std::endl;
-    } else {
-        for (auto v : path) {
-            std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
-        }
-    }
-}
-
-// Get Bacon Table using BFS
+// Get Bacon Table using BFS AKA betweenness centrality
 std::map<int, int> MakeGraph::BaconNumber(Vertex v1) {
     // std::cout << v1<<" NUMBER IS!!" << std::endl;
     std::map<Vertex, int> dist;
@@ -361,9 +350,9 @@ Vertex MakeGraph::MostPopularArtist() {
     return best;
 }
 
- 
-//implement Prims using a priority queue to get shortest path from starting artist to ending artist
-void MakeGraph::makeMST(Vertex startingArtist, Vertex endingArtist) {
+
+//Prims algorithm to get shortest path from starting artist to ending artist for unweighted graph
+std::vector<std::pair<Vertex, std::string>> MakeGraph::makeMST(Vertex startingArtist, Vertex endingArtist) {
     std::vector<Vertex> v = g_.getVertices();
     std::map<Vertex, double> distance;
     std::map<Vertex, Vertex> parent;
@@ -379,132 +368,39 @@ void MakeGraph::makeMST(Vertex startingArtist, Vertex endingArtist) {
     while (!pq.empty()) {
         Vertex u = pq.top().first;
         pq.pop();
-        visited[u] = true;
-        std::vector<Vertex> adj = g_.getAdjacent(u);
-        for (Vertex artist : adj) {
-            if (!visited[artist]) {
-                double weight = g_.getEdgeWeight(u, artist);
-                if (distance[artist] > weight) {
-                    distance[artist] = weight;
-                    parent[artist] = u;
+        if (visited[u] == false) {
+            visited[u] = true;
+            std::vector<Vertex> adj = g_.getAdjacent(u);
+            for (Vertex artist : adj) {
+                if (visited[artist] == false && distance[artist] > 1) {
+                    distance[artist] = 1;
                     pq.push(std::pair<Vertex, double>(artist, distance[artist]));
+                    parent[artist] = u;
                 }
             }
         }
     }
+    
+    std::cout << "Playlist from " << startingArtist << " to " << endingArtist << " is: " << std::endl;
     std::vector<std::pair<Vertex, std::string>> path;
     Vertex current = endingArtist;
     while (current != startingArtist) {
         std::string songs = g_.getEdgeLabel(parent[current], current);
         path.push_back(std::pair<Vertex, std::string>(current, songs));
-        // for (std::string song : songs) {
-        //     ;
-        // }
         current = parent[current];
     }
     std::reverse(path.begin(), path.end());
-    for (auto v : path) {
-        std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
+    printPathBFS(path);
+    return path;
+}
+
+//print path 
+void MakeGraph::printPathMST(std::vector<std::pair<Vertex, std::string>> path) {
+    for (std::pair<Vertex, std::string> p : path) {
+        std::cout << p.first << " " << p.second << std::endl;
     }
 }
 
-
-// cycle detection using BFS from starting artist to ending artist return the cycle if there is one
-std::vector<Vertex> MakeGraph::cycleDetection(Vertex startingArtist) {
-    std::vector<Vertex> v = g_.getVertices();
-    std::map<Vertex, Vertex> parent;
-    std::map<Vertex, bool> visited;
-    for (Vertex artist : v) {
-        parent.insert(std::pair<Vertex, Vertex>(artist, ""));
-        visited.insert(std::pair<Vertex, bool>(artist, false));
-    }
-    std::queue<Vertex> q;
-    q.push(startingArtist);
-    visited[startingArtist] = true;
-    // int count = 0;
-    while (!q.empty()) {
-        // std::cout<<"Count: "<<count++<<std::endl;
-        Vertex u = q.front();
-        q.pop();
-        std::vector<Vertex> adj = g_.getAdjacent(u);
-        for (Vertex artist : adj) {
-            // std::cout<<"artist searched : " <<artist<<std::endl;
-            if (!visited[artist]) {
-                visited[artist] = true;
-                parent[artist] = u;
-                q.push(artist);
-            } else if (parent[u] != artist) {
-                std::vector<Vertex> cycle;
-                Vertex current = artist;
-                while (current != u && current != "") {
-                    // std::cout<<"Current: "<<current<<std::endl;
-                    cycle.push_back(current);
-                    current = parent[current];
-                }
-                cycle.push_back(u);
-                std::reverse(cycle.begin(), cycle.end());
-                return cycle;
-            }
-        }
-    }
-    std::vector<Vertex> empty;
-    return empty;
-}
-
-//get bridges edges using DFS only if connected componet has more than 5 vertex
-std::vector<std::pair<Vertex, Vertex>> MakeGraph::getBridges() {
-    std::vector<Vertex> v = g_.getVertices();
-    std::map<Vertex, int> disc;
-    std::map<Vertex, int> low;
-    std::map<Vertex, Vertex> parent;
-    std::map<Vertex, bool> visited;
-    std::vector<std::pair<Vertex, Vertex>> bridges;
-    for (Vertex artist : v) {
-        disc.insert(std::pair<Vertex, int>(artist, -1));
-        low.insert(std::pair<Vertex, int>(artist, -1));
-        parent.insert(std::pair<Vertex, Vertex>(artist, ""));
-        visited.insert(std::pair<Vertex, bool>(artist, false));
-    }
-    int time = 0;
-    for (Vertex artist : v) {
-        if (!visited[artist]) {
-            std::vector<Vertex> adj = g_.getAdjacent(artist);
-            if (adj.size() > 1160) {
-                bridgesHelper(artist, visited, disc, low, parent, bridges, time);
-            }
-        }
-    }
-    return bridges;
-}
-
-//bridgesDFS
-void MakeGraph::bridgesHelper(Vertex u, std::map<Vertex, bool> &visited, std::map<Vertex, int> &disc, std::map<Vertex, int> &low, std::map<Vertex, Vertex> &parent, std::vector<std::pair<Vertex, Vertex>> &bridges, int &time) {
-    visited[u] = true;
-    disc[u] = low[u] = ++time;
-    std::vector<Vertex> adj = g_.getAdjacent(u);
-    for (Vertex artist : adj) {
-        if (!visited[artist]) {
-            parent[artist] = u;
-            bridgesHelper(artist, visited, disc, low, parent, bridges, time);
-            low[u] = std::min(low[u], low[artist]);
-            if (low[artist] > disc[u]) {
-                bridges.push_back(std::pair<Vertex, Vertex>(u, artist));
-            }
-        } else if (artist != parent[u]) {
-            low[u] = std::min(low[u], disc[artist]);
-        }
-    }
-}
-
-
-//print bridges edges
-void MakeGraph::printBridges() {
-    std::vector<std::pair<Vertex, Vertex>> bridges = getBridges();
-    for (auto v : bridges) {
-        std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
-    }
-    std::cout << "Number of bridges: " << bridges.size() << std::endl;
-}
 
 //count connected components using DFS
 int MakeGraph::countConnectedComponents() {
@@ -544,7 +440,7 @@ void MakeGraph::makeHistogram() {
     for (Vertex artist : v) {
         if (!visited[artist]) {
             int count = 0;
-            connectedComponentsHelper(artist, visited, count);
+            histogramHelper(artist, visited, count);
             if (histogram.find(count) == histogram.end()) {
                 histogram.insert(std::pair<int, int>(count, 1));
             } else {
@@ -557,110 +453,22 @@ void MakeGraph::makeHistogram() {
     }
 }
 
-//connectedComponentsHelper
-void MakeGraph::connectedComponentsHelper(Vertex u, std::map<Vertex, bool> &visited, int &count) {
+//connectedComponentsHelper for histogram
+void MakeGraph::histogramHelper(Vertex u, std::map<Vertex, bool> &visited, int &count) {
     visited[u] = true;
     count++;
     std::vector<Vertex> adj = g_.getAdjacent(u);
     for (Vertex artist : adj) {
         if (!visited[artist]) {
-            connectedComponentsHelper(artist, visited, count);
+            histogramHelper(artist, visited, count);
         }
     }
 }
 
-//force directed graph for largest connected component max 200 lines
-void MakeGraph::forceDirectedGraph() {
+//get random artist
+Vertex MakeGraph::getRandomArtist() {
     std::vector<Vertex> v = g_.getVertices();
-    std::map<Vertex, bool> visited;
-    for (Vertex artist : v) {
-        visited.insert(std::pair<Vertex, bool>(artist, false));
-    }
-    std::vector<Vertex> largest;
-    int max = 0;
-    for (Vertex artist : v) {
-        if (!visited[artist]) {
-            int count = 0;
-            connectedComponentsHelper(artist, visited, count);
-            if (count > max) {
-                max = count;
-                largest = getConnectedComponent(artist);
-            }
-        }
-    }
-    std::cout << "Largest connected component size: " << largest.size() << std::endl;
-    std::map<Vertex, std::pair<double, double>> positions;
-    std::map<Vertex, std::pair<double, double>> velocities;
-    std::map<Vertex, std::pair<double, double>> forces;
-    for (Vertex artist : largest) {
-        positions.insert(std::pair<Vertex, std::pair<double, double>>(artist, std::pair<double, double>(rand() % 1000, rand() % 1000)));
-        velocities.insert(std::pair<Vertex, std::pair<double, double>>(artist, std::pair<double, double>(0, 0)));
-        forces.insert(std::pair<Vertex, std::pair<double, double>>(artist, std::pair<double, double>(0, 0)));
-    }
-    for (int i = 0; i < 2; i++) {
-        std::cout << "Iteration: " << i << std::endl;
-        for (Vertex artist : largest) {
-            // std::cout<< "Artist: " << artist << std::endl;
-            std::vector<Vertex> adj = g_.getAdjacent(artist);
-            for (Vertex a : adj) {
-                // std::cout << "Adjacent: " << a << std::endl;
-                if (std::find(largest.begin(), largest.end(), a) != largest.end()) {
-                    double x = positions[artist].first - positions[a].first;
-                    double y = positions[artist].second - positions[a].second;
-                    double distance = sqrt(x * x + y * y);
-                    double force = 1000 * 1000 / distance;
-                    forces[artist].first += force * x / distance;
-                    forces[artist].second += force * y / distance;
-                }
-            }
-        }
-        for (Vertex artist : largest) {
-            std::cout << "Artist: " << artist << std::endl;
-            velocities[artist].first += forces[artist].first;
-            velocities[artist].second += forces[artist].second;
-            positions[artist].first += velocities[artist].first;
-            positions[artist].second += velocities[artist].second;
-            forces[artist].first = 0;
-            forces[artist].second = 0;
-        }
-    }
-    std::ofstream myfile;
-    myfile.open("forceDirectedGraph.txt");
-    myfile << "digraph G {" << std::endl;
-    for (Vertex artist : largest) {
-        myfile << artist << " [pos=\"" << positions[artist].first << "," << positions[artist].second << "!\"];" << std::endl;
-    }
-    for (Vertex artist : largest) {
-        std::vector<Vertex> adj = g_.getAdjacent(artist);
-        for (Vertex a : adj) {
-            if (std::find(largest.begin(), largest.end(), a) != largest.end()) {
-                myfile << artist << " -> " << a << ";" << std::endl;
-            }
-        }
-    }
-    myfile << "}";
-    myfile.close();
-}
-//getConnectedComponent
-std::vector<Vertex> MakeGraph::getConnectedComponent(Vertex u) {
-    std::vector<Vertex> v = g_.getVertices();
-    std::map<Vertex, bool> visited;
-    for (Vertex artist : v) {
-        visited.insert(std::pair<Vertex, bool>(artist, false));
-    }
-    std::vector<Vertex> component;
-    connectedComponentsHelper(u, visited, component);
-    return component;
-}
-
-//connectedComponentsHelper
-void MakeGraph::connectedComponentsHelper(Vertex u, std::map<Vertex, bool> &visited, std::vector<Vertex> &component) {
-    visited[u] = true;
-    component.push_back(u);
-    std::vector<Vertex> adj = g_.getAdjacent(u);
-    for (Vertex artist : adj) {
-        if (!visited[artist]) {
-            connectedComponentsHelper(artist, visited, component);
-        }
-    }
+    int random = rand() % v.size();
+    std::cout << "Random artist: " << random << std::endl;
+    return v[random];
 }
