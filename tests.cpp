@@ -8,16 +8,19 @@ TEST_CASE("BFS") {
     MakeGraph g("tracks_twoartists.txt");
     Vertex artist1 = "The Weeknd";
     Vertex artist2 = "Ariana Grande";
+    Vertex artist3 = "Bach";
     std::vector<std::pair<Vertex, std::string>> output=g.BFS(artist1, artist2);
+    std::vector<std::pair<Vertex, std::string>> invalidOutput=g.BFS(artist1, artist3);
 
     //create solution vector and push in correct output
     //TODO: push back correct solution to sol
     std::vector<std::pair<Vertex, std::string>> sol;
-    sol.push_back(std::pair<Vertex, std::string> ("The Weeknd", "empty"));
-    sol.push_back(std::pair<Vertex, std::string> ("Calvin Harris", "Over Now (with The Weeknd)"));
-    sol.push_back(std::pair<Vertex, std::string> ("Ariana Grande", "Heatstroke (feat. Young Thug Pharrell Williams & Ariana Grande)"));
+    sol.push_back();
+    sol.push_back();
+    sol.push_back();
 
     REQUIRE(sol == output);
+    REQUIRE(invalidOutput == std::vector<std::pair<Vertex, std::string>>());
 }
 
 TEST_CASE("Prim") { 
@@ -85,5 +88,29 @@ TEST_CASE("CycleDetection") {
     sol.push_back();
 
     REQUIRE(sol == output);
+
+}
+
+TEST_CASE("BetweenessCentrality") { 
+
+    //create graph and bacon num alg, saves results to table1, table2, table3
+    MakeGraph g("tracks_twoartists.txt");
+    Vertex artist1 = "The Weeknd";
+    Vertex artist2 = "Ariana Grande";
+    Vertex artist3 = "Idina Menzel";
+    std::map<int, int> table1= g.BaconNumber(artist1);
+    std::map<int, int> table2=g.BaconNumber(artist2);
+    std::map<int, int> table3=g.BaconNumber(artist3);
+    
+
+    //TODO: create solution maps and push in correct output
+    std::map<int, int> sol1;
+    std::map<int, int> sol2;
+    std::map<int, int> sol3;
+    
+
+    REQUIRE(sol1 == table1);
+    REQUIRE(sol2 == table2);
+    REQUIRE(sol3 == table3);
 
 }
