@@ -37,9 +37,6 @@ class MakeGraph {
         void connectedComponentsHelper(Vertex u, std::map<Vertex, bool> &visited);
         void makeHistogram();
         void histogramHelper(Vertex u, std::map<Vertex, bool> &visited, int &count);
-
-        Vertex getRandomArtist();
-
     private:
         Graph g_;
         std::map<Vertex, double> pageRankMap_;
