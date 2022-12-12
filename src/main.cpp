@@ -25,8 +25,19 @@ int main() {
     g.MostPopularArtist();
     std::cout<<"----------------------------"<<std::endl;
     std::cout<<"----------------------------"<<std::endl;
-    g.cycleDetection(artist1);
+    
+    int numComponents = g.countConnectedComponents();
+    std::cout<<"Number of connected components: "<<numComponents<<std::endl;
     std::cout<<"----------------------------"<<std::endl;
     std::cout<<"----------------------------"<<std::endl;
+    //get number of vertices
+    int numVertices = g.getGraph().getVertices().size();
+    std::cout<<"Number of vertices: "<<numVertices<<std::endl;
+    std::cout<<"----------------------------"<<std::endl;
+    std::cout<<"----------------------------"<<std::endl;
+    g.makeHistogram();
+    std::cout<<"----------------------------"<<std::endl;
+    std::cout<<"----------------------------"<<std::endl;
+    g.forceDirectedGraph();
     return 0;
 }

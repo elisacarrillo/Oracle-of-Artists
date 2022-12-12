@@ -62,45 +62,7 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
         std::cout<<"------------------------------------"<<std::endl;
     }
     g_.snapshot();
-
-
-    Vertex artist1 = "The Weeknd";
-    Vertex artist2 = "Ariana Grande";
-    PrintShortestPath(artist1, artist2);
-
-    std::cout<<"------------------------------------"<<std::endl;
-    std::cout<<"------------------------------------"<<std::endl;
-
-    Vertex artist3 = "The Weeknd";
-    PrintBaconNumber(artist3);
-    
-    std::cout<<"------------------------------------"<<std::endl;
-    std::cout<<"------------------------------------"<<std::endl;
-    //get most popular artist
-    // Vertex artist4 = BestPageRank();
-    // std::cout<<"Most popular artist: "<<artist4<<std::endl;
-
-    // std::cout<<"------------------------------------"<<std::endl;
-    // std::cout<<"------------------------------------"<<std::endl;
-    // // std::vector<Vertex> artists = g_.getVertices();
-    // // std::cout << "BEST CENTER AWARD GOES TO..." << BestBacon(artists) << std::endl;
-    // std::cout<<"MST"<<std::endl;
-    // makeMST(artist1, artist2);
-
-    std::cout<<"------------------------------------"<<std::endl;
-    std::cout<<"Building Page Rank"<<std::endl;
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-    pagerank();
-    std::cout<<"------------------------------------"<<std::endl;
-    std::cout<<"------------------------------------"<<std::endl;
-    std::cout<<"Cycle Detection"<<std::endl;
-    std::vector<Vertex> cycle = cycleDetection(artist1);
-    //print cycle
-    for (unsigned int i = 0; i < cycle.size(); i++) {
-        std::cout<<cycle[i]<<std::endl;
-    }
-    std::cout<<"------------------------------------"<<std::endl;
-    std::cout<<"------------------------------------"<<std::endl;
+    // pagerank();
 
 }
 
@@ -489,3 +451,216 @@ std::vector<Vertex> MakeGraph::cycleDetection(Vertex startingArtist) {
     return empty;
 }
 
+//get bridges edges using DFS only if connected componet has more than 5 vertex
+std::vector<std::pair<Vertex, Vertex>> MakeGraph::getBridges() {
+    std::vector<Vertex> v = g_.getVertices();
+    std::map<Vertex, int> disc;
+    std::map<Vertex, int> low;
+    std::map<Vertex, Vertex> parent;
+    std::map<Vertex, bool> visited;
+    std::vector<std::pair<Vertex, Vertex>> bridges;
+    for (Vertex artist : v) {
+        disc.insert(std::pair<Vertex, int>(artist, -1));
+        low.insert(std::pair<Vertex, int>(artist, -1));
+        parent.insert(std::pair<Vertex, Vertex>(artist, ""));
+        visited.insert(std::pair<Vertex, bool>(artist, false));
+    }
+    int time = 0;
+    for (Vertex artist : v) {
+        if (!visited[artist]) {
+            std::vector<Vertex> adj = g_.getAdjacent(artist);
+            if (adj.size() > 1160) {
+                bridgesHelper(artist, visited, disc, low, parent, bridges, time);
+            }
+        }
+    }
+    return bridges;
+}
+
+//bridgesDFS
+void MakeGraph::bridgesHelper(Vertex u, std::map<Vertex, bool> &visited, std::map<Vertex, int> &disc, std::map<Vertex, int> &low, std::map<Vertex, Vertex> &parent, std::vector<std::pair<Vertex, Vertex>> &bridges, int &time) {
+    visited[u] = true;
+    disc[u] = low[u] = ++time;
+    std::vector<Vertex> adj = g_.getAdjacent(u);
+    for (Vertex artist : adj) {
+        if (!visited[artist]) {
+            parent[artist] = u;
+            bridgesHelper(artist, visited, disc, low, parent, bridges, time);
+            low[u] = std::min(low[u], low[artist]);
+            if (low[artist] > disc[u]) {
+                bridges.push_back(std::pair<Vertex, Vertex>(u, artist));
+            }
+        } else if (artist != parent[u]) {
+            low[u] = std::min(low[u], disc[artist]);
+        }
+    }
+}
+
+
+//print bridges edges
+void MakeGraph::printBridges() {
+    std::vector<std::pair<Vertex, Vertex>> bridges = getBridges();
+    for (auto v : bridges) {
+        std::cout << "Artist: " << v.first << " Song: " << v.second << std::endl;
+    }
+    std::cout << "Number of bridges: " << bridges.size() << std::endl;
+}
+
+//count connected components using DFS
+int MakeGraph::countConnectedComponents() {
+    std::vector<Vertex> v = g_.getVertices();
+    std::map<Vertex, bool> visited;
+    for (Vertex artist : v) {
+        visited.insert(std::pair<Vertex, bool>(artist, false));
+    }
+    int count = 0;
+    for (Vertex artist : v) {
+        if (!visited[artist]) {
+            count++;
+            connectedComponentsHelper(artist, visited);
+        }
+    }
+    return count;
+}
+//connected components DFS
+void MakeGraph::connectedComponentsHelper(Vertex u, std::map<Vertex, bool> &visited) {
+    visited[u] = true;
+    std::vector<Vertex> adj = g_.getAdjacent(u);
+    for (Vertex artist : adj) {
+        if (!visited[artist]) {
+            connectedComponentsHelper(artist, visited);
+        }
+    }
+}
+
+// make historgram with sizes of connetcted components
+void MakeGraph::makeHistogram() {
+    std::vector<Vertex> v = g_.getVertices();
+    std::map<Vertex, bool> visited;
+    for (Vertex artist : v) {
+        visited.insert(std::pair<Vertex, bool>(artist, false));
+    }
+    std::map<int, int> histogram;
+    for (Vertex artist : v) {
+        if (!visited[artist]) {
+            int count = 0;
+            connectedComponentsHelper(artist, visited, count);
+            if (histogram.find(count) == histogram.end()) {
+                histogram.insert(std::pair<int, int>(count, 1));
+            } else {
+                histogram[count]++;
+            }
+        }
+    }
+    for (auto v : histogram) {
+        std::cout << "Size: " << v.first << " Number of components: " << v.second << std::endl;
+    }
+}
+
+//connectedComponentsHelper
+void MakeGraph::connectedComponentsHelper(Vertex u, std::map<Vertex, bool> &visited, int &count) {
+    visited[u] = true;
+    count++;
+    std::vector<Vertex> adj = g_.getAdjacent(u);
+    for (Vertex artist : adj) {
+        if (!visited[artist]) {
+            connectedComponentsHelper(artist, visited, count);
+        }
+    }
+}
+
+//force directed graph for largest connected component max 200 lines
+void MakeGraph::forceDirectedGraph() {
+    std::vector<Vertex> v = g_.getVertices();
+    std::map<Vertex, bool> visited;
+    for (Vertex artist : v) {
+        visited.insert(std::pair<Vertex, bool>(artist, false));
+    }
+    std::vector<Vertex> largest;
+    int max = 0;
+    for (Vertex artist : v) {
+        if (!visited[artist]) {
+            int count = 0;
+            connectedComponentsHelper(artist, visited, count);
+            if (count > max) {
+                max = count;
+                largest = getConnectedComponent(artist);
+            }
+        }
+    }
+    std::cout << "Largest connected component size: " << largest.size() << std::endl;
+    std::map<Vertex, std::pair<double, double>> positions;
+    std::map<Vertex, std::pair<double, double>> velocities;
+    std::map<Vertex, std::pair<double, double>> forces;
+    for (Vertex artist : largest) {
+        positions.insert(std::pair<Vertex, std::pair<double, double>>(artist, std::pair<double, double>(rand() % 1000, rand() % 1000)));
+        velocities.insert(std::pair<Vertex, std::pair<double, double>>(artist, std::pair<double, double>(0, 0)));
+        forces.insert(std::pair<Vertex, std::pair<double, double>>(artist, std::pair<double, double>(0, 0)));
+    }
+    for (int i = 0; i < 2; i++) {
+        std::cout << "Iteration: " << i << std::endl;
+        for (Vertex artist : largest) {
+            // std::cout<< "Artist: " << artist << std::endl;
+            std::vector<Vertex> adj = g_.getAdjacent(artist);
+            for (Vertex a : adj) {
+                // std::cout << "Adjacent: " << a << std::endl;
+                if (std::find(largest.begin(), largest.end(), a) != largest.end()) {
+                    double x = positions[artist].first - positions[a].first;
+                    double y = positions[artist].second - positions[a].second;
+                    double distance = sqrt(x * x + y * y);
+                    double force = 1000 * 1000 / distance;
+                    forces[artist].first += force * x / distance;
+                    forces[artist].second += force * y / distance;
+                }
+            }
+        }
+        for (Vertex artist : largest) {
+            std::cout << "Artist: " << artist << std::endl;
+            velocities[artist].first += forces[artist].first;
+            velocities[artist].second += forces[artist].second;
+            positions[artist].first += velocities[artist].first;
+            positions[artist].second += velocities[artist].second;
+            forces[artist].first = 0;
+            forces[artist].second = 0;
+        }
+    }
+    std::ofstream myfile;
+    myfile.open("forceDirectedGraph.txt");
+    myfile << "digraph G {" << std::endl;
+    for (Vertex artist : largest) {
+        myfile << artist << " [pos=\"" << positions[artist].first << "," << positions[artist].second << "!\"];" << std::endl;
+    }
+    for (Vertex artist : largest) {
+        std::vector<Vertex> adj = g_.getAdjacent(artist);
+        for (Vertex a : adj) {
+            if (std::find(largest.begin(), largest.end(), a) != largest.end()) {
+                myfile << artist << " -> " << a << ";" << std::endl;
+            }
+        }
+    }
+    myfile << "}";
+    myfile.close();
+}
+//getConnectedComponent
+std::vector<Vertex> MakeGraph::getConnectedComponent(Vertex u) {
+    std::vector<Vertex> v = g_.getVertices();
+    std::map<Vertex, bool> visited;
+    for (Vertex artist : v) {
+        visited.insert(std::pair<Vertex, bool>(artist, false));
+    }
+    std::vector<Vertex> component;
+    connectedComponentsHelper(u, visited, component);
+    return component;
+}
+
+//connectedComponentsHelper
+void MakeGraph::connectedComponentsHelper(Vertex u, std::map<Vertex, bool> &visited, std::vector<Vertex> &component) {
+    visited[u] = true;
+    component.push_back(u);
+    std::vector<Vertex> adj = g_.getAdjacent(u);
+    for (Vertex artist : adj) {
+        if (!visited[artist]) {
+            connectedComponentsHelper(artist, visited, component);
+        }
+    }
+}
