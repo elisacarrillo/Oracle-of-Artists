@@ -13,9 +13,9 @@ TEST_CASE("BFS") {
     //create solution vector and push in correct output
     //TODO: push back correct solution to sol
     std::vector<std::pair<Vertex, std::string>> sol;
-    sol.push_back();
-    sol.push_back();
-    sol.push_back();
+    sol.push_back(std::pair<Vertex, std::string> ("The Weeknd", "empty"));
+    sol.push_back(std::pair<Vertex, std::string> ("Calvin Harris", "Over Now (with The Weeknd)"));
+    sol.push_back(std::pair<Vertex, std::string> ("Ariana Grande", "Heatstroke (feat. Young Thug Pharrell Williams & Ariana Grande)"));
 
     REQUIRE(sol == output);
 }
