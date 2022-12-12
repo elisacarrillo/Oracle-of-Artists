@@ -25,7 +25,8 @@ int main() {
     g.MostPopularArtist();
     std::cout<<"----------------------------"<<std::endl;
     std::cout<<"----------------------------"<<std::endl;
-    
-
+    g.cycleDetection(artist1);
+    std::cout<<"----------------------------"<<std::endl;
+    std::cout<<"----------------------------"<<std::endl;
     return 0;
 }
