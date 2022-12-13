@@ -16,6 +16,7 @@ Oracle-of-Artists
   - README.md
 
 Presentation Video
+https://www.youtube.com/watch?v=bR9_4GnOb6A
 
 
 ## Running Instructions
