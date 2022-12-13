@@ -394,12 +394,6 @@ std::vector<std::pair<Vertex, std::string>> MakeGraph::makeMST(Vertex startingAr
     return path;
 }
 
-//print path 
-void MakeGraph::printPathMST(std::vector<std::pair<Vertex, std::string>> path) {
-    for (std::pair<Vertex, std::string> p : path) {
-        std::cout << p.first << " " << p.second << std::endl;
-    }
-}
 
 
 //count connected components using DFS

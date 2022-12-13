@@ -31,7 +31,6 @@ class MakeGraph {
 
 
         std::vector<std::pair<Vertex, std::string>> makeMST(Vertex startingArtist, Vertex endingArtist);
-        void printPathMST(std::vector<std::pair<Vertex, std::string>> path);
                 
         int countConnectedComponents();
         void connectedComponentsHelper(Vertex u, std::map<Vertex, bool> &visited);
