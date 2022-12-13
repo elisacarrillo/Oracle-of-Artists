@@ -36,7 +36,6 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
         std::vector<std::string> artistVect;
         std::stringstream ssTwo(artists);
         std::string person;
-        g_.initSnapshot("Artist Graph");
         while(std::getline(ssTwo,person,',')) {
             
             person.erase(person.begin() + person.size() - 1);
@@ -63,7 +62,6 @@ MakeGraph::MakeGraph(string filename) : g_(false, false) {
         
         std::cout<<"------------------------------------"<<std::endl;
     }
-    g_.snapshot();
     std::cout<<"-------------BUILDING PAGERANK---------------"<<std::endl;
     pagerank();
 
