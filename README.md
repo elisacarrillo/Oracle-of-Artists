@@ -1,12 +1,3 @@
-"The README clearly and succintly describes the following:
-
-The linkage and location of all major code, data, results, and deliverable files.
-
-The necessary commands to run the assignment are well described and include instructions for selecting the input dataset and output location
-
-The test suite is well described and instructions on how to reproduce the tests are provided."
-
-___________________________________________________________________________________________________________________________________________________
 
 ## Github Organization
 Oracle-of-Artists
