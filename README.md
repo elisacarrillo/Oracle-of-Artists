@@ -50,7 +50,8 @@ TEST 'Page Rank'
  - Tests if "The Weeknd" has the correct popularity number
 
 TEST 'Betweeness Centrality'
+  - Confirms the correctness of “bacon tables” for artists “The Weeknd”, “Ariana Grande”, and “Idina Menzel”
 
-
-TEST '
+TEST 'Connected Components'
+  - Checks if the graph contains the correct number of connected components
 
