@@ -14,6 +14,9 @@ bin/main: src/makegraph.cpp src/main.cpp nim_graph/graph.cpp
 obj/catch.o: tests/catch.cc
 	$(CXX) $(CXX_FLAGS) -c $^ -o $@
 
+tests: tests/tests.cpp src/makegraph.cpp nim_graph/graph.cpp
+	${CXX} ${CXX_FLAGS} tests/tests.cpp src/makegraph.cpp nim_graph/graph.cpp -o bin/tests
+
 .DEFAULT_GOAL := tests
 .PHONY: clean exec tests
 
