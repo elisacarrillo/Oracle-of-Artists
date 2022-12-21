@@ -28,9 +28,7 @@ make exec
 ./bin/exec
  ```
  Then, the graph will be constructed, and our Pagerank map will be created.
- You will then be asked to input two artists.
- For Artist 1 input: Taylor Swift
- For Artist 2 input: Ariana Grande
+ You will then be asked to input two artists. For Artist 1 input: Taylor Swift. For Artist 2 input: Ariana Grande. Both names should be typed without spaces.
  
  ## Running tests
  
