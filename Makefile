@@ -1,6 +1,6 @@
 CXX=clang++
 INCLUDES=-Iincludes/
-CXX_FLAGS=-std=c++20 -g -fstandalone-debug -Wall -Wextra -Werror -pedantic $(INCLUDES)
+CXX_FLAGS=-std=c++20 -fstandalone-debug -Wall -Wextra -Werror -pedantic $(INCLUDES)
 
 exec: bin/exec
 tests: bin/tests
